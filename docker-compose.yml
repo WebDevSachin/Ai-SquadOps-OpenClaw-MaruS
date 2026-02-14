@@ -60,6 +60,9 @@ services:
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=development
       - JWT_SECRET=${JWT_SECRET:-squadops_dev_secret}
+      - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+      - SYSTEM_OPENROUTER_KEY=${SYSTEM_OPENROUTER_KEY}
+      - SYSTEM_ANTHROPIC_KEY=${SYSTEM_ANTHROPIC_KEY}
       # OpenClaw gateway runs in this compose network
       - OPENCLAW_GATEWAY_URL=http://openclaw-gateway:18789
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}

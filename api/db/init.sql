@@ -33,6 +33,39 @@ CREATE TABLE team_members (
 );
 
 -- ============================================================
+-- API Keys — for programmatic access
+-- ============================================================
+CREATE TABLE api_keys (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  key_hash TEXT NOT NULL,
+  key_prefix VARCHAR(20) NOT NULL,
+  last_used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_api_keys_user ON api_keys(user_id);
+CREATE INDEX idx_api_keys_prefix ON api_keys(key_prefix);
+
+-- ============================================================
+-- Provider Keys — BYOK (Bring Your Own Keys)
+-- ============================================================
+CREATE TABLE provider_keys (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  provider VARCHAR(50) NOT NULL,
+  key_data TEXT NOT NULL,
+  enabled BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, provider)
+);
+
+CREATE INDEX idx_provider_keys_user ON provider_keys(user_id);
+CREATE INDEX idx_provider_keys_provider ON provider_keys(provider);
+
+-- ============================================================
 -- Agents
 -- ============================================================
 CREATE TABLE agents (
@@ -47,27 +80,27 @@ CREATE TABLE agents (
 
 -- Seed all 21 agents
 INSERT INTO agents (id, name, specialty, squad, model) VALUES
-  ('marus', 'MaruS', 'Orchestrator / Lead', 'lead', 'anthropic/claude-opus-4'),
-  ('forge', 'Forge', 'Backend Dev', 'engineering', 'anthropic/claude-opus-4'),
-  ('canvas', 'Canvas', 'Frontend / UI Dev', 'engineering', 'anthropic/claude-opus-4'),
-  ('helm', 'Helm', 'DevOps / Infra', 'engineering', 'anthropic/claude-opus-4'),
-  ('aegis', 'Aegis', 'QA / Testing', 'engineering', 'anthropic/claude-sonnet-4-5'),
-  ('vault', 'Vault', 'DBA / Database', 'engineering', 'anthropic/claude-opus-4'),
-  ('architect', 'Architect', 'System Design', 'engineering', 'anthropic/claude-opus-4'),
-  ('patcher', 'Patcher', 'Code Review / Refactor', 'engineering', 'anthropic/claude-opus-4'),
-  ('scout', 'Scout', 'Research', 'business', 'anthropic/claude-opus-4'),
-  ('scribe', 'Scribe', 'Content Writer', 'business', 'anthropic/claude-sonnet-4-5'),
-  ('sentinel', 'Sentinel', 'Retention', 'business', 'anthropic/claude-opus-4'),
-  ('lens', 'Lens', 'SEO', 'business', 'anthropic/claude-sonnet-4-5'),
-  ('herald', 'Herald', 'Outreach / Sales', 'business', 'anthropic/claude-opus-4'),
-  ('oracle', 'Oracle', 'Analytics', 'business', 'anthropic/claude-opus-4'),
-  ('guide', 'Guide', 'Onboarding', 'business', 'anthropic/claude-sonnet-4-5'),
-  ('beacon', 'Beacon', 'Social Media', 'business', 'anthropic/claude-sonnet-4-5'),
-  ('shield', 'Shield', 'Customer Support', 'business', 'anthropic/claude-sonnet-4-5'),
-  ('compass', 'Compass', 'Strategy / Planning', 'business', 'anthropic/claude-opus-4'),
-  ('warden', 'Warden', 'Security / Audit', 'ops', 'anthropic/claude-opus-4'),
-  ('prism', 'Prism', 'Design / UX', 'ops', 'anthropic/claude-sonnet-4-5'),
-  ('clerk', 'Clerk', 'Docs / Knowledge', 'ops', 'anthropic/claude-sonnet-4-5');
+  ('marus', 'MaruS', 'Orchestrator / Lead', 'lead', 'openrouter/moonshotai/kimi-k2.5'),
+  ('forge', 'Forge', 'Backend Dev', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('canvas', 'Canvas', 'Frontend / UI Dev', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('helm', 'Helm', 'DevOps / Infra', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('aegis', 'Aegis', 'QA / Testing', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('vault', 'Vault', 'DBA / Database', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('architect', 'Architect', 'System Design', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('patcher', 'Patcher', 'Code Review / Refactor', 'engineering', 'openrouter/moonshotai/kimi-k2.5'),
+  ('scout', 'Scout', 'Research', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('scribe', 'Scribe', 'Content Writer', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('sentinel', 'Sentinel', 'Retention', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('lens', 'Lens', 'SEO', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('herald', 'Herald', 'Outreach / Sales', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('oracle', 'Oracle', 'Analytics', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('guide', 'Guide', 'Onboarding', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('beacon', 'Beacon', 'Social Media', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('shield', 'Shield', 'Customer Support', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('compass', 'Compass', 'Strategy / Planning', 'business', 'openrouter/moonshotai/kimi-k2.5'),
+  ('warden', 'Warden', 'Security / Audit', 'ops', 'openrouter/moonshotai/kimi-k2.5'),
+  ('prism', 'Prism', 'Design / UX', 'ops', 'openrouter/moonshotai/kimi-k2.5'),
+  ('clerk', 'Clerk', 'Docs / Knowledge', 'ops', 'openrouter/moonshotai/kimi-k2.5');
 
 -- ============================================================
 -- Tasks

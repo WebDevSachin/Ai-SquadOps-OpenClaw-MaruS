@@ -1,0 +1,353 @@
+{
+  "agents": {
+    "defaults": {
+      "sandbox": {
+        "mode": "non-main",
+        "scope": "agent",
+        "workspaceAccess": "rw",
+        "docker": {
+          "image": "openclaw-sandbox:bookworm-slim",
+          "readOnlyRoot": true,
+          "tmpfs": ["/tmp", "/var/tmp"],
+          "network": "none",
+          "user": "1000:1000",
+          "capDrop": ["ALL"],
+          "pidsLimit": 256,
+          "memory": "1g",
+          "memorySwap": "2g",
+          "cpus": 1,
+          "setupCommand": "apt-get update && apt-get install -y git curl jq"
+        },
+        "prune": {
+          "idleHours": 24,
+          "maxAgeDays": 7
+        }
+      }
+    },
+    "list": [
+      {
+        "id": "marus",
+        "name": "MaruS",
+        "default": true,
+        "workspace": "/home/node/.openclaw/workspace-marus",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": { "mode": "off" }
+      },
+      {
+        "id": "forge",
+        "name": "Forge",
+        "workspace": "/home/node/.openclaw/workspace-forge",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "apt-get update && apt-get install -y git curl jq python3 build-essential && npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "edit", "apply_patch", "sessions_send", "sessions_spawn"],
+          "deny": ["browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "canvas",
+        "name": "Canvas",
+        "workspace": "/home/node/.openclaw/workspace-canvas",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "apt-get update && apt-get install -y git curl jq && npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "edit", "apply_patch", "sessions_send", "browser"],
+          "deny": ["cron"]
+        }
+      },
+      {
+        "id": "helm",
+        "name": "Helm",
+        "workspace": "/home/node/.openclaw/workspace-helm",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "apt-get update && apt-get install -y git curl jq docker.io && npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "edit", "apply_patch", "sessions_send"],
+          "deny": ["browser", "canvas"]
+        }
+      },
+      {
+        "id": "aegis",
+        "name": "Aegis",
+        "workspace": "/home/node/.openclaw/workspace-aegis",
+        "model": "kimi/moonshot-v1-32k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "apt-get update && apt-get install -y git curl && npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "edit", "sessions_send"],
+          "deny": ["browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "vault",
+        "name": "Vault",
+        "workspace": "/home/node/.openclaw/workspace-vault",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "apt-get update && apt-get install -y git curl && npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "sessions_send"],
+          "deny": ["browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "architect",
+        "name": "Architect",
+        "workspace": "/home/node/.openclaw/workspace-architect",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "sessions_send", "sessions_spawn"],
+          "deny": ["browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "patcher",
+        "name": "Patcher",
+        "workspace": "/home/node/.openclaw/workspace-patcher",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": {
+            "network": "bridge",
+            "setupCommand": "npm install -g opencode@latest"
+          }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "edit", "sessions_send"],
+          "deny": ["browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "scout",
+        "name": "Scout",
+        "workspace": "/home/node/.openclaw/workspace-scout",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "scribe",
+        "name": "Scribe",
+        "workspace": "/home/node/.openclaw/workspace-scribe",
+        "model": "kimi/moonshot-v1-32k",
+        "tools": {
+          "allow": ["read", "write", "edit", "sessions_send"],
+          "deny": ["exec", "browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "sentinel",
+        "name": "Sentinel",
+        "workspace": "/home/node/.openclaw/workspace-sentinel",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "lens",
+        "name": "Lens",
+        "workspace": "/home/node/.openclaw/workspace-lens",
+        "model": "kimi/moonshot-v1-32k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "herald",
+        "name": "Herald",
+        "workspace": "/home/node/.openclaw/workspace-herald",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "oracle",
+        "name": "Oracle",
+        "workspace": "/home/node/.openclaw/workspace-oracle",
+        "model": "kimi/moonshot-v1-128k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "guide",
+        "name": "Guide",
+        "workspace": "/home/node/.openclaw/workspace-guide",
+        "model": "kimi/moonshot-v1-32k",
+        "tools": {
+          "allow": ["read", "write", "sessions_send"],
+          "deny": ["exec", "browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "beacon",
+        "name": "Beacon",
+        "workspace": "/home/node/.openclaw/workspace-beacon",
+        "model": "kimi/moonshot-v1-32k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["exec", "read", "write", "browser", "sessions_send"],
+          "deny": ["canvas", "cron"]
+        }
+      },
+      {
+        "id": "shield",
+        "name": "Shield",
+        "workspace": "/home/node/.openclaw/workspace-shield",
+        "model": "kimi/moonshot-v1-32k",
+        "tools": {
+          "allow": ["read", "write", "sessions_send"],
+          "deny": ["exec", "browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "compass",
+        "name": "Compass",
+        "workspace": "/home/node/.openclaw/workspace-compass",
+        "model": "kimi/moonshot-v1-128k",
+        "tools": {
+          "allow": ["read", "write", "sessions_send", "sessions_spawn"],
+          "deny": ["exec", "browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "warden",
+        "name": "Warden",
+        "workspace": "/home/node/.openclaw/workspace-warden",
+        "model": "kimi/moonshot-v1-128k",
+        "tools": {
+          "allow": ["exec", "read", "sessions_send"],
+          "deny": ["write", "edit", "apply_patch", "browser", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "prism",
+        "name": "Prism",
+        "workspace": "/home/node/.openclaw/workspace-prism",
+        "model": "kimi/moonshot-v1-32k",
+        "sandbox": {
+          "docker": { "network": "bridge" }
+        },
+        "tools": {
+          "allow": ["read", "write", "browser", "sessions_send"],
+          "deny": ["exec", "canvas", "cron"]
+        }
+      },
+      {
+        "id": "clerk",
+        "name": "Clerk",
+        "workspace": "/home/node/.openclaw/workspace-clerk",
+        "model": "kimi/moonshot-v1-32k",
+        "tools": {
+          "allow": ["read", "write", "edit", "sessions_send"],
+          "deny": ["exec", "browser", "canvas", "cron"]
+        }
+      }
+    ]
+  },
+  "bindings": [
+    { "agentId": "marus", "match": { "channel": "telegram" } },
+    { "agentId": "marus", "match": { "channel": "slack" } },
+    { "agentId": "marus", "match": { "channel": "cli" } }
+  ],
+  "tools": {
+    "agentToAgent": {
+      "enabled": true,
+      "allow": [
+        "marus", "forge", "canvas", "helm", "aegis", "vault", "architect", "patcher",
+        "scout", "scribe", "sentinel", "lens", "herald", "oracle", "guide", "beacon",
+        "shield", "compass", "warden", "prism", "clerk"
+      ]
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true
+    },
+    "slack": {
+      "enabled": false
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "bind": "lan"
+  },
+  "models": {
+    "providers": {
+      "kimi": {
+        "apiKey": "${KIMI_API_KEY}",
+        "baseURL": "${KIMI_API_BASE}",
+        "type": "openai"
+      }
+    },
+    "aliases": {
+      "default": "kimi/moonshot-v1-128k",
+      "fast": "kimi/moonshot-v1-32k"
+    }
+  },
+  "skills": {
+    "load": {
+      "extraDirs": ["./skills"],
+      "watch": true,
+      "watchDebounceMs": 250
+    },
+    "entries": {
+      "opencode-controller": { "enabled": true },
+      "preview-deploy": { "enabled": true },
+      "safety-scanner": { "enabled": true }
+    }
+  }
+}

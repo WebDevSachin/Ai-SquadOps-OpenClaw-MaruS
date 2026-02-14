@@ -1,0 +1,730 @@
+{
+  "env": {
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter/moonshotai/kimi-k2.5"
+      },
+      "models": {
+        "openrouter/moonshotai/kimi-k2.5": {
+          "alias": "Kimi K2.5"
+        }
+      },
+      "sandbox": {
+        "mode": "non-main",
+        "workspaceAccess": "rw",
+        "scope": "agent"
+      }
+    },
+    "list": [
+      {
+        "id": "marus",
+        "default": true,
+        "name": "MaruS",
+        "workspace": "~/.openclaw/workspace-marus",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "MaruS",
+          "emoji": "🧠"
+        },
+        "sandbox": {
+          "mode": "off"
+        }
+      },
+      {
+        "id": "forge",
+        "name": "Forge",
+        "workspace": "~/.openclaw/workspace-forge",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Forge",
+          "emoji": "🔧"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "apply_patch",
+            "sessions_send",
+            "sessions_spawn"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "canvas",
+        "name": "Canvas",
+        "workspace": "~/.openclaw/workspace-canvas",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Canvas",
+          "emoji": "🎨"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "apply_patch",
+            "sessions_send",
+            "browser"
+          ],
+          "deny": [
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "helm",
+        "name": "Helm",
+        "workspace": "~/.openclaw/workspace-helm",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Helm",
+          "emoji": "⚓"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "apply_patch",
+            "sessions_send"
+          ],
+          "deny": [
+            "browser",
+            "canvas"
+          ]
+        }
+      },
+      {
+        "id": "aegis",
+        "name": "Aegis",
+        "workspace": "~/.openclaw/workspace-aegis",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Aegis",
+          "emoji": "🛡️"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "sessions_send"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "vault",
+        "name": "Vault",
+        "workspace": "~/.openclaw/workspace-vault",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Vault",
+          "emoji": "🗄️"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "sessions_send"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "architect",
+        "name": "Architect",
+        "workspace": "~/.openclaw/workspace-architect",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Architect",
+          "emoji": "📐"
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "sessions_send",
+            "sessions_spawn"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "patcher",
+        "name": "Patcher",
+        "workspace": "~/.openclaw/workspace-patcher",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Patcher",
+          "emoji": "🩹"
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "sessions_send"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "scout",
+        "name": "Scout",
+        "workspace": "~/.openclaw/workspace-scout",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Scout",
+          "emoji": "🔍"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "scribe",
+        "name": "Scribe",
+        "workspace": "~/.openclaw/workspace-scribe",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Scribe",
+          "emoji": "📝"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "edit",
+            "sessions_send"
+          ],
+          "deny": [
+            "exec",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "sentinel",
+        "name": "Sentinel",
+        "workspace": "~/.openclaw/workspace-sentinel",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Sentinel",
+          "emoji": "🏰"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "lens",
+        "name": "Lens",
+        "workspace": "~/.openclaw/workspace-lens",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Lens",
+          "emoji": "🔬"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "herald",
+        "name": "Herald",
+        "workspace": "~/.openclaw/workspace-herald",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Herald",
+          "emoji": "📢"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "oracle",
+        "name": "Oracle",
+        "workspace": "~/.openclaw/workspace-oracle",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Oracle",
+          "emoji": "🔮"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "guide",
+        "name": "Guide",
+        "workspace": "~/.openclaw/workspace-guide",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Guide",
+          "emoji": "🧭"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "sessions_send"
+          ],
+          "deny": [
+            "exec",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "beacon",
+        "name": "Beacon",
+        "workspace": "~/.openclaw/workspace-beacon",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Beacon",
+          "emoji": "💡"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "shield",
+        "name": "Shield",
+        "workspace": "~/.openclaw/workspace-shield",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Shield",
+          "emoji": "🛡️"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "sessions_send"
+          ],
+          "deny": [
+            "exec",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "compass",
+        "name": "Compass",
+        "workspace": "~/.openclaw/workspace-compass",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Compass",
+          "emoji": "🧭"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "sessions_send",
+            "sessions_spawn"
+          ],
+          "deny": [
+            "exec",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "warden",
+        "name": "Warden",
+        "workspace": "~/.openclaw/workspace-warden",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Warden",
+          "emoji": "🔒"
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "sessions_send"
+          ],
+          "deny": [
+            "write",
+            "edit",
+            "apply_patch",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "prism",
+        "name": "Prism",
+        "workspace": "~/.openclaw/workspace-prism",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Prism",
+          "emoji": "🌈"
+        },
+        "sandbox": {
+          "mode": "non-main",
+          "scope": "agent",
+          "docker": {
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "browser",
+            "sessions_send"
+          ],
+          "deny": [
+            "canvas",
+            "cron"
+          ]
+        }
+      },
+      {
+        "id": "clerk",
+        "name": "Clerk",
+        "workspace": "~/.openclaw/workspace-clerk",
+        "model": "openrouter/moonshotai/kimi-k2.5",
+        "identity": {
+          "name": "Clerk",
+          "emoji": "📋"
+        },
+        "tools": {
+          "allow": [
+            "read",
+            "write",
+            "sessions_send"
+          ],
+          "deny": [
+            "exec",
+            "browser",
+            "canvas",
+            "cron"
+          ]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "agentToAgent": {
+      "enabled": true,
+      "allow": [
+        "marus",
+        "forge",
+        "canvas",
+        "helm",
+        "aegis",
+        "vault",
+        "architect",
+        "patcher",
+        "scout",
+        "scribe",
+        "sentinel",
+        "lens",
+        "herald",
+        "oracle",
+        "guide",
+        "beacon",
+        "shield",
+        "compass",
+        "warden",
+        "prism",
+        "clerk"
+      ]
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "whatsapp": {
+      "sendReadReceipts": true,
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "textChunkLimit": 4000,
+      "mediaMaxMb": 50,
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "debounceMs": 0
+    },
+    "telegram": {
+      "dmPolicy": "pairing",
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    },
+    "discord": {
+      "groupPolicy": "allowlist",
+      "dm": {
+        "enabled": true,
+        "policy": "pairing"
+      },
+      "guilds": {}
+    },
+    "googlechat": {
+      "groupPolicy": "allowlist"
+    },
+    "slack": {
+      "mode": "socket",
+      "webhookPath": "/slack/events",
+      "userTokenReadOnly": true,
+      "groupPolicy": "allowlist",
+      "slashCommand": {
+        "enabled": true,
+        "name": "openclaw"
+      },
+      "dm": {
+        "enabled": true,
+        "policy": "pairing"
+      },
+      "channels": {}
+    },
+    "signal": {
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist"
+    },
+    "imessage": {
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist"
+    },
+    "msteams": {
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "e4ba6a594fed8c6e70897bcf5b03ecff33e36eee60d8c55497c3d1c1329b3bfd"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "whatsapp": {
+        "enabled": true
+      },
+      "discord": {
+        "enabled": true
+      },
+      "googlechat": {
+        "enabled": true
+      },
+      "slack": {
+        "enabled": true
+      },
+      "signal": {
+        "enabled": true
+      },
+      "imessage": {
+        "enabled": true
+      },
+      "msteams": {
+        "enabled": true
+      }
+    }
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.2.13",
+    "lastTouchedAt": "2026-02-14T17:34:46.048Z"
+  }
+}

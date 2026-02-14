@@ -1,0 +1,114 @@
+# SquadOps Docker Compose — Ops Hub Services
+# This compose runs: Postgres, Redis, API, Dashboard, OpenClaw Gateway
+
+services:
+  # -------------------------------------------------------
+  # Postgres — tasks, audit log, approvals, users, usage
+  # -------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: squadops-postgres
+    environment:
+      POSTGRES_DB: squadops
+      POSTGRES_USER: squadops
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-squadops_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./api/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U squadops -d squadops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------
+  # Redis — session cache, pub/sub for agent events
+  # -------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: squadops-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------
+  # API — Express backend for Ops Hub dashboard
+  # -------------------------------------------------------
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: squadops-api
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://squadops:${POSTGRES_PASSWORD:-squadops_dev}@postgres:5432/squadops
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+      - JWT_SECRET=${JWT_SECRET:-squadops_dev_secret}
+      # OpenClaw gateway runs in this compose network
+      - OPENCLAW_GATEWAY_URL=http://openclaw-gateway:18789
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # -------------------------------------------------------
+  # Dashboard — Next.js Ops Hub frontend
+  # -------------------------------------------------------
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: squadops-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - NODE_ENV=development
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # -------------------------------------------------------
+  # OpenClaw Gateway — AI agent gateway service
+  # -------------------------------------------------------
+  openclaw-gateway:
+    image: openclaw:local
+    container_name: squadops-openclaw-gateway
+    init: true
+    ports:
+      - "18789:18789"
+      - "18790:18790"
+    volumes:
+      - ./openclaw-config:/home/node/.openclaw
+    environment:
+      - HOME=/home/node
+      - TERM=xterm-256color
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+    command: ["node", "dist/index.js", "gateway", "--port", "18789", "--verbose", "--allow-unconfigured"]
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:

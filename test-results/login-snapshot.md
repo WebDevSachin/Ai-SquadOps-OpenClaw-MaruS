@@ -1,0 +1,47 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e5]:
+    - link "SquadOps AI Agent Operations Hub" [ref=e7] [cursor=pointer]:
+      - /url: /
+      - img [ref=e9]
+      - generic [ref=e12]:
+        - heading "SquadOps" [level=1] [ref=e13]
+        - paragraph [ref=e14]: AI Agent Operations Hub
+    - generic [ref=e15]:
+      - generic [ref=e17]:
+        - heading "Welcome back" [level=2] [ref=e18]
+        - paragraph [ref=e19]: Sign in to your account to continue
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]: Email address
+          - generic [ref=e23]:
+            - img [ref=e25]
+            - textbox "Email address" [ref=e28]:
+              - /placeholder: you@example.com
+        - generic [ref=e29]:
+          - generic [ref=e30]: Password
+          - generic [ref=e31]:
+            - img [ref=e32]
+            - textbox "••••••••" [ref=e35]
+            - button [ref=e36] [cursor=pointer]:
+              - img [ref=e37]
+        - generic [ref=e40]:
+          - generic [ref=e41] [cursor=pointer]:
+            - checkbox "Remember me" [ref=e42]
+            - generic [ref=e43]: Remember me
+          - link "Forgot password?" [ref=e44] [cursor=pointer]:
+            - /url: /auth/forgot-password
+        - button "Sign in" [ref=e45] [cursor=pointer]:
+          - text: Sign in
+          - img [ref=e47]
+      - generic [ref=e53]: Don't have an account?
+      - link "Create an account" [ref=e54] [cursor=pointer]:
+        - /url: /auth/signup
+        - button "Create an account" [ref=e55]
+    - paragraph [ref=e56]:
+      - text: By signing in, you agree to our
+      - link "Terms of Service" [ref=e57] [cursor=pointer]:
+        - /url: "#"
+      - text: and
+      - link "Privacy Policy" [ref=e58] [cursor=pointer]:
+        - /url: "#"

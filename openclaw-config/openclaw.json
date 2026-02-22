@@ -620,6 +620,7 @@
     }
   },
   "commands": {
+    "restart": true,
     "native": "auto",
     "nativeSkills": "auto"
   },
@@ -638,6 +639,7 @@
       "debounceMs": 0
     },
     "telegram": {
+      "botToken": "8502700424:AAEcWZd1bel3Y3vmVXNhJ085JYi3x2-eGiA",
       "dmPolicy": "pairing",
       "groups": {
         "*": {

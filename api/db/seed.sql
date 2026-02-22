@@ -1,0 +1,581 @@
+-- ============================================================================
+-- SquadOps Database Seed Data
+-- Run this after init.sql to populate the database with sample data
+-- ============================================================================
+
+-- ============================================================================
+-- NICHE DOMAINS (100 Niches across various categories)
+-- ============================================================================
+
+-- Technology (15 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Artificial Intelligence', 'artificial-intelligence', 'AI, machine learning, and neural networks content', 'technology', 'ai-ml', 
+    ARRAY['AI', 'machine learning', 'deep learning', 'neural networks', 'ChatGPT', 'LLM', 'computer vision'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "news", "research"]}'::JSONB, 9),
+('Cybersecurity', 'cybersecurity', 'Security, hacking, and privacy content', 'technology', 'security',
+    ARRAY['cybersecurity', 'hacking', 'penetration testing', 'privacy', 'encryption', 'malware'],
+    '{"min_subscribers": 5000, "content_type": ["tutorial", "news"]}'::JSONB, 8),
+('Web Development', 'web-development', 'Frontend, backend, and full-stack development', 'technology', 'programming',
+    ARRAY['web development', 'JavaScript', 'React', 'Node.js', 'HTML', 'CSS', 'full stack'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "project"]}'::JSONB, 9),
+('Mobile Development', 'mobile-development', 'iOS and Android app development', 'technology', 'programming',
+    ARRAY['mobile development', 'iOS', 'Android', 'React Native', 'Flutter', 'Swift'],
+    '{"min_subscribers": 8000, "content_type": ["tutorial", "project"]}'::JSONB, 8),
+('Cloud Computing', 'cloud-computing', 'AWS, Azure, GCP, and cloud architecture', 'technology', 'infrastructure',
+    ARRAY['cloud computing', 'AWS', 'Azure', 'GCP', 'DevOps', 'serverless'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "architecture"]}'::JSONB, 8),
+('Data Science', 'data-science', 'Data analysis, visualization, and machine learning', 'technology', 'data',
+    ARRAY['data science', 'Python', 'Pandas', 'machine learning', 'data visualization', 'statistics'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "project"]}'::JSONB, 8),
+('Blockchain & Crypto', 'blockchain-crypto', 'Blockchain technology, cryptocurrency, and DeFi', 'technology', 'blockchain',
+    ARRAY['blockchain', 'cryptocurrency', 'Bitcoin', 'Ethereum', 'DeFi', 'NFT', 'Web3'],
+    '{"min_subscribers": 15000, "content_type": ["news", "analysis"]}'::JSONB, 7),
+('Game Development', 'game-development', 'Video game creation and design', 'technology', 'gaming-tech',
+    ARRAY['game development', 'Unity', 'Unreal Engine', 'game design', 'indie games', 'game programming'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "devlog"]}'::JSONB, 7),
+('DevOps', 'devops', 'Development operations, CI/CD, and infrastructure', 'technology', 'infrastructure',
+    ARRAY['DevOps', 'Docker', 'Kubernetes', 'CI/CD', 'automation', 'infrastructure'],
+    '{"min_subscribers": 8000, "content_type": ["tutorial", "best practices"]}'::JSONB, 8),
+('Linux & Open Source', 'linux-open-source', 'Linux distributions and open source software', 'technology', 'os',
+    ARRAY['Linux', 'open source', 'Ubuntu', 'Arch Linux', 'command line', 'shell scripting'],
+    '{"min_subscribers": 5000, "content_type": ["tutorial", "review"]}'::JSONB, 6),
+('Hardware Reviews', 'hardware-reviews', 'PC components, laptops, and tech gadgets', 'technology', 'hardware',
+    ARRAY['hardware', 'PC building', 'laptop review', 'tech review', 'GPU', 'CPU'],
+    '{"min_subscribers": 20000, "content_type": ["review", "benchmark"]}'::JSONB, 7),
+('Networking', 'networking', 'Computer networking and infrastructure', 'technology', 'infrastructure',
+    ARRAY['networking', 'CCNA', 'routing', 'switching', 'network security', 'WiFi'],
+    '{"min_subscribers": 5000, "content_type": ["tutorial", "certification"]}'::JSONB, 6),
+('Robotics', 'robotics', 'Robotics, automation, and IoT', 'technology', 'hardware',
+    ARRAY['robotics', 'Arduino', 'Raspberry Pi', 'automation', 'IoT', 'sensors'],
+    '{"min_subscribers": 8000, "content_type": ["project", "tutorial"]}'::JSONB, 6),
+('3D Printing', '3d-printing', '3D printing technology and projects', 'technology', 'hardware',
+    ARRAY['3D printing', 'CAD', 'modeling', 'maker', 'filament', 'Prusa'],
+    '{"min_subscribers": 10000, "content_type": ["project", "tutorial"]}'::JSONB, 6),
+('Tech News', 'tech-news', 'Technology news and commentary', 'technology', 'news',
+    ARRAY['tech news', 'technology', 'gadgets', 'reviews', 'industry'],
+    '{"min_subscribers": 20000, "content_type": ["news", "commentary"]}'::JSONB, 8)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Entertainment (15 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Gaming', 'gaming', 'Video game reviews, gameplay, and esports', 'entertainment', 'gaming',
+    ARRAY['gaming', 'gameplay', 'review', 'esports', 'walkthrough', 'lets play'],
+    '{"min_subscribers": 50000, "content_type": ["gameplay", "review"]}'::JSONB, 10),
+('Movie Reviews', 'movie-reviews', 'Film criticism and movie analysis', 'entertainment', 'movies',
+    ARRAY['movie review', 'film analysis', 'cinema', 'Hollywood', 'movie breakdown'],
+    '{"min_subscribers": 10000, "content_type": ["review", "analysis"]}'::JSONB, 7),
+('Music Reviews', 'music-reviews', 'Music reviews, reactions, and discovery', 'entertainment', 'music',
+    ARRAY['music', 'song review', 'album review', 'reaction', 'music discovery'],
+    '{"min_subscribers": 20000, "content_type": ["reaction", "review"]}'::JSONB, 8),
+('TV Shows', 'tv-shows', 'Television series reviews and discussions', 'entertainment', 'television',
+    ARRAY['TV show', 'series review', 'Netflix', 'HBO', 'streaming', 'episode breakdown'],
+    '{"min_subscribers": 15000, "content_type": ["review", "analysis"]}'::JSONB, 7),
+('Anime', 'anime', 'Anime reviews, recommendations, and discussions', 'entertainment', 'anime',
+    ARRAY['anime', 'manga', 'otaku', 'anime review', 'crunchyroll', 'studio ghibli'],
+    '{"min_subscribers": 25000, "content_type": ["review", "recommendation"]}'::JSONB, 9),
+('Comedy', 'comedy', 'Stand-up comedy, sketches, and humor', 'entertainment', 'comedy',
+    ARRAY['comedy', 'stand-up', 'sketch', 'funny', 'humor', 'satire'],
+    '{"min_subscribers": 30000, "content_type": ["sketch", "stand-up"]}'::JSONB, 8),
+('Esports', 'esports', 'Competitive gaming and esports events', 'entertainment', 'esports',
+    ARRAY['esports', 'competitive gaming', 'tournament', 'League of Legends', 'CS:GO', 'Valorant'],
+    '{"min_subscribers": 30000, "content_type": ["highlights", "analysis"]}'::JSONB, 8),
+('Celebrity News', 'celebrity-news', 'Celebrity gossip and entertainment news', 'entertainment', 'celebrity',
+    ARRAY['celebrity', 'Hollywood', 'gossip', 'entertainment news', 'pop culture'],
+    '{"min_subscribers": 40000, "content_type": ["news", "gossip"]}'::JSONB, 6),
+('True Crime', 'true-crime', 'True crime stories and investigations', 'entertainment', 'crime',
+    ARRAY['true crime', 'mystery', 'investigation', 'criminal', 'case study'],
+    '{"min_subscribers": 20000, "content_type": ["documentary", "analysis"]}'::JSONB, 7),
+('ASMR', 'asmr', 'Autonomous Sensory Meridian Response content', 'entertainment', 'asmr',
+    ARRAY['ASMR', 'relaxation', 'sleep', 'whisper', 'tapping', 'sounds'],
+    '{"min_subscribers": 15000, "content_type": ["roleplay", "triggers"]}'::JSONB, 6),
+('Reaction Videos', 'reaction-videos', 'Reaction and commentary content', 'entertainment', 'reaction',
+    ARRAY['reaction', 'commentary', 'funny reaction', 'meme review'],
+    '{"min_subscribers": 25000, "content_type": ["reaction", "commentary"]}'::JSONB, 7),
+('Podcasts', 'podcasts', 'Podcast episodes and discussions', 'entertainment', 'podcast',
+    ARRAY['podcast', 'interview', 'discussion', 'talk show', 'audio'],
+    '{"min_subscribers": 10000, "content_type": ["interview", "discussion"]}'::JSONB, 6),
+('Magic & Illusion', 'magic-illusion', 'Magic tricks and illusion performances', 'entertainment', 'magic',
+    ARRAY['magic', 'illusion', 'card tricks', 'sleight of hand', 'mentalism'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "performance"]}'::JSONB, 5),
+('Pranks', 'pranks', 'Prank videos and social experiments', 'entertainment', 'pranks',
+    ARRAY['prank', 'social experiment', 'funny pranks', 'public prank'],
+    '{"min_subscribers": 50000, "content_type": ["prank", "social"]}'::JSONB, 5),
+('Animation', 'animation', 'Animated content and storytelling', 'entertainment', 'animation',
+    ARRAY['animation', 'cartoon', 'animated story', '2D animation', '3D animation'],
+    '{"min_subscribers": 15000, "content_type": ["story", "animated"]}'::JSONB, 6)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Education (12 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Science Education', 'science-education', 'Physics, chemistry, biology, and general science', 'education', 'science',
+    ARRAY['science', 'physics', 'chemistry', 'biology', 'astronomy', 'education'],
+    '{"min_subscribers": 50000, "content_type": ["educational", "documentary"]}'::JSONB, 8),
+('Language Learning', 'language-learning', 'Learning foreign languages', 'education', 'languages',
+    ARRAY['language learning', 'Spanish', 'French', 'Japanese', 'English', 'learn language'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "lesson"]}'::JSONB, 7),
+('Online Courses', 'online-courses', 'Educational courses and tutorials', 'education', 'e-learning',
+    ARRAY['online courses', 'e-learning', 'tutorial', 'MOOC', 'skill development'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "course"]}'::JSONB, 8),
+('Math Education', 'math-education', 'Mathematics tutorials and explanations', 'education', 'math',
+    ARRAY['math', 'mathematics', 'calculus', 'algebra', 'statistics', 'tutorial'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "explanation"]}'::JSONB, 7),
+('History', 'history', 'Historical events and educational content', 'education', 'history',
+    ARRAY['history', 'historical', 'ancient history', 'world war', 'civilization'],
+    '{"min_subscribers": 20000, "content_type": ["documentary", "educational"]}'::JSONB, 7),
+('Coding Tutorials', 'coding-tutorials', 'Programming and software development tutorials', 'education', 'programming',
+    ARRAY['coding', 'programming tutorial', 'learn to code', 'bootcamp', 'coding interview'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "project"]}'::JSONB, 9),
+('Music Education', 'music-education', 'Music theory and instrument lessons', 'education', 'music',
+    ARRAY['music theory', 'piano lessons', 'guitar lessons', 'music education', 'learn music'],
+    '{"min_subscribers": 10000, "content_type": ["lesson", "tutorial"]}'::JSONB, 6),
+('Academic Help', 'academic-help', 'Homework help and academic subjects', 'education', 'academic',
+    ARRAY['homework help', 'study tips', 'exam prep', 'academic', 'tutoring'],
+    '{"min_subscribers": 8000, "content_type": ["tutorial", "tips"]}'::JSONB, 6),
+('Financial Education', 'financial-education', 'Financial literacy and money management education', 'education', 'finance',
+    ARRAY['financial literacy', 'money education', 'economics', 'investing basics'],
+    '{"min_subscribers": 15000, "content_type": ["educational", "tutorial"]}'::JSONB, 8),
+('Art Education', 'art-education', 'Art techniques and creative education', 'education', 'art',
+    ARRAY['art tutorial', 'drawing', 'painting', 'art education', 'creative'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "demonstration"]}'::JSONB, 6),
+('Philosophy', 'philosophy', 'Philosophical discussions and concepts', 'education', 'philosophy',
+    ARRAY['philosophy', 'ethics', 'logic', 'existentialism', 'thought experiment'],
+    '{"min_subscribers": 10000, "content_type": ["discussion", "explanation"]}'::JSONB, 5),
+('DIY & Crafts', 'diy-crafts', 'Do-it-yourself projects and crafting', 'education', 'crafts',
+    ARRAY['DIY', 'crafts', 'handmade', 'upcycling', 'craft tutorial'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "project"]}'::JSONB, 6)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Business & Finance (12 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Entrepreneurship', 'entrepreneurship', 'Startups, business building, and entrepreneurship', 'business', 'startups',
+    ARRAY['entrepreneurship', 'startup', 'business', 'founder', 'CEO', 'venture capital'],
+    '{"min_subscribers": 20000, "content_type": ["interview", "advice"]}'::JSONB, 8),
+('Personal Finance', 'personal-finance', 'Money management, investing, and financial literacy', 'business', 'finance',
+    ARRAY['personal finance', 'investing', 'stocks', 'crypto', 'budget', 'money'],
+    '{"min_subscribers": 25000, "content_type": ["educational", "analysis"]}'::JSONB, 9),
+('Digital Marketing', 'digital-marketing', 'SEO, social media, and online marketing', 'business', 'marketing',
+    ARRAY['digital marketing', 'SEO', 'social media', 'content marketing', 'growth hacking'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "case study"]}'::JSONB, 7),
+('Stock Market', 'stock-market', 'Stock trading and market analysis', 'business', 'trading',
+    ARRAY['stocks', 'trading', 'investment', 'market analysis', 'day trading', 'technical analysis'],
+    '{"min_subscribers": 20000, "content_type": ["analysis", "news"]}'::JSONB, 8),
+('Real Estate', 'real-estate', 'Real estate investing and property', 'business', 'realestate',
+    ARRAY['real estate', 'property investment', 'rental income', 'house flipping', 'mortgage'],
+    '{"min_subscribers": 15000, "content_type": ["education", "advice"]}'::JSONB, 7),
+('E-commerce', 'e-commerce', 'Online selling and e-commerce strategies', 'business', 'ecommerce',
+    ARRAY['e-commerce', 'dropshipping', 'Amazon FBA', 'Shopify', 'online store'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "case study"]}'::JSONB, 8),
+('Career Advice', 'career-advice', 'Career development and job hunting', 'business', 'career',
+    ARRAY['career advice', 'job interview', 'resume', 'career change', 'salary negotiation'],
+    '{"min_subscribers": 15000, "content_type": ["advice", "tips"]}'::JSONB, 7),
+('Leadership', 'leadership', 'Leadership skills and management', 'business', 'management',
+    ARRAY['leadership', 'management', 'team building', 'CEO advice', 'executive'],
+    '{"min_subscribers": 15000, "content_type": ["advice", "interview"]}'::JSONB, 6),
+('Sales Training', 'sales-training', 'Sales techniques and strategies', 'business', 'sales',
+    ARRAY['sales', 'selling', 'sales training', 'cold calling', 'closing deals'],
+    '{"min_subscribers": 10000, "content_type": ["training", "tips"]}'::JSONB, 6),
+('Freelancing', 'freelancing', 'Freelance work and remote work advice', 'business', 'freelance',
+    ARRAY['freelancing', 'remote work', 'upwork', 'fiverr', 'freelance tips'],
+    '{"min_subscribers": 12000, "content_type": ["advice", "tutorial"]}'::JSONB, 7),
+('Business News', 'business-news', 'Business and economic news', 'business', 'news',
+    ARRAY['business news', 'economy', 'market news', 'industry analysis', 'corporate'],
+    '{"min_subscribers": 25000, "content_type": ["news", "analysis"]}'::JSONB, 7),
+('Productivity', 'productivity', 'Productivity tips and time management', 'business', 'productivity',
+    ARRAY['productivity', 'time management', 'habits', 'GTD', 'efficiency'],
+    '{"min_subscribers": 20000, "content_type": ["tips", "tutorial"]}'::JSONB, 7)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Health & Fitness (12 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Fitness', 'fitness', 'Workouts, fitness tips, and health', 'health', 'fitness',
+    ARRAY['fitness', 'workout', 'gym', 'exercise', 'health', 'training'],
+    '{"min_subscribers": 30000, "content_type": ["tutorial", "workout"]}'::JSONB, 8),
+('Mental Health', 'mental-health', 'Mental wellness, therapy, and self-care', 'health', 'wellness',
+    ARRAY['mental health', 'therapy', 'anxiety', 'depression', 'self care', 'mindfulness'],
+    '{"min_subscribers": 10000, "content_type": ["educational", "support"]}'::JSONB, 9),
+('Nutrition', 'nutrition', 'Healthy eating, diets, and nutrition science', 'health', 'nutrition',
+    ARRAY['nutrition', 'healthy eating', 'diet', 'weight loss', 'recipes', 'supplements'],
+    '{"min_subscribers": 20000, "content_type": ["educational", "recipe"]}'::JSONB, 7),
+('Yoga', 'yoga', 'Yoga practices and meditation', 'health', 'yoga',
+    ARRAY['yoga', 'meditation', 'mindfulness', 'flexibility', 'wellness'],
+    '{"min_subscribers": 15000, "content_type": ["class", "tutorial"]}'::JSONB, 7),
+('Bodybuilding', 'bodybuilding', 'Muscle building and physique training', 'health', 'bodybuilding',
+    ARRAY['bodybuilding', 'muscle', 'gym', 'workout', 'fitness', 'strength'],
+    '{"min_subscribers": 25000, "content_type": ["workout", "advice"]}'::JSONB, 7),
+('Running', 'running', 'Running tips, training, and marathons', 'health', 'running',
+    ARRAY['running', 'marathon', 'jogging', 'trail running', 'running tips'],
+    '{"min_subscribers": 15000, "content_type": ["training", "tips"]}'::JSONB, 6),
+('Weight Loss', 'weight-loss', 'Weight loss journeys and tips', 'health', 'weightloss',
+    ARRAY['weight loss', 'diet', 'fat loss', 'transformation', 'calorie deficit'],
+    '{"min_subscribers": 25000, "content_type": ["journey", "tips"]}'::JSONB, 7),
+('Healthy Cooking', 'healthy-cooking', 'Healthy recipes and meal prep', 'health', 'cooking',
+    ARRAY['healthy recipes', 'meal prep', 'healthy cooking', 'clean eating', 'nutrition'],
+    '{"min_subscribers": 20000, "content_type": ["recipe", "meal prep"]}'::JSONB, 7),
+('Physical Therapy', 'physical-therapy', 'Recovery, rehab, and injury prevention', 'health', 'therapy',
+    ARRAY['physical therapy', 'rehab', 'injury recovery', 'mobility', 'pain relief'],
+    '{"min_subscribers": 10000, "content_type": ["therapy", "exercise"]}'::JSONB, 6),
+('Sleep Health', 'sleep-health', 'Sleep improvement and rest optimization', 'health', 'sleep',
+    ARRAY['sleep', 'insomnia', 'sleep hygiene', 'rest', 'sleep tips'],
+    '{"min_subscribers": 10000, "content_type": ["tips", "education"]}'::JSONB, 6),
+('Alternative Medicine', 'alternative-medicine', 'Natural healing and alternative therapies', 'health', 'alternative',
+    ARRAY['alternative medicine', 'natural healing', 'herbal', 'acupuncture', 'holistic'],
+    '{"min_subscribers": 10000, "content_type": ["education", "review"]}'::JSONB, 5),
+('Sports Medicine', 'sports-medicine', 'Athletic performance and sports health', 'health', 'sports',
+    ARRAY['sports medicine', 'athletic training', 'sports injury', 'performance'],
+    '{"min_subscribers": 12000, "content_type": ["education", "training"]}'::JSONB, 6)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Lifestyle (12 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Travel', 'travel', 'Travel vlogs, destinations, and tips', 'lifestyle', 'travel',
+    ARRAY['travel', 'vlog', 'destination', 'backpacking', 'adventure', 'tourism'],
+    '{"min_subscribers": 25000, "content_type": ["vlog", "guide"]}'::JSONB, 8),
+('Cooking', 'cooking', 'Recipes, cooking techniques, and food culture', 'lifestyle', 'food',
+    ARRAY['cooking', 'recipes', 'food', 'chef', 'baking', 'cuisine'],
+    '{"min_subscribers": 20000, "content_type": ["recipe", "tutorial"]}'::JSONB, 7),
+('Minimalism', 'minimalism', 'Minimalist lifestyle and decluttering', 'lifestyle', 'minimalism',
+    ARRAY['minimalism', 'declutter', 'simple living', 'organization', 'tiny house'],
+    '{"min_subscribers": 15000, "content_type": ["lifestyle", "guide"]}'::JSONB, 6),
+('Home Decor', 'home-decor', 'Interior design and home decoration', 'lifestyle', 'homedecor',
+    ARRAY['home decor', 'interior design', 'home makeover', 'DIY decor', 'organization'],
+    '{"min_subscribers": 20000, "content_type": ["makeover", "tutorial"]}'::JSONB, 6),
+('Fashion', 'fashion', 'Fashion trends, styling, and clothing', 'lifestyle', 'fashion',
+    ARRAY['fashion', 'style', 'outfit', 'clothing', 'trends', 'lookbook'],
+    '{"min_subscribers": 25000, "content_type": ["lookbook", "haul"]}'::JSONB, 7),
+('Beauty', 'beauty', 'Beauty tips, makeup, and skincare', 'lifestyle', 'beauty',
+    ARRAY['beauty', 'makeup tutorial', 'skincare', 'cosmetics', 'glam'],
+    '{"min_subscribers": 30000, "content_type": ["tutorial", "review"]}'::JSONB, 7),
+('Gardening', 'gardening', 'Gardening tips and plant care', 'lifestyle', 'gardening',
+    ARRAY['gardening', 'plants', 'garden', 'indoor plants', 'vegetable garden'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "tips"]}'::JSONB, 5),
+('Pets', 'pets', 'Pet care, training, and animal content', 'lifestyle', 'pets',
+    ARRAY['pets', 'dog training', 'cat care', 'animals', 'pet tips'],
+    '{"min_subscribers": 20000, "content_type": ["tutorial", "cute"]}'::JSONB, 7),
+('Parenting', 'parenting', 'Parenting advice and family life', 'lifestyle', 'parenting',
+    ARRAY['parenting', 'kids', 'family', 'mom life', 'dad life', 'childcare'],
+    '{"min_subscribers": 15000, "content_type": ["advice", "vlog"]}'::JSONB, 6),
+('Relationships', 'relationships', 'Dating advice and relationship tips', 'lifestyle', 'relationships',
+    ARRAY['relationships', 'dating', 'marriage', 'couples', 'love advice'],
+    '{"min_subscribers": 15000, "content_type": ["advice", "discussion"]}'::JSONB, 5),
+('Sustainability', 'sustainability', 'Eco-friendly living and sustainability', 'lifestyle', 'eco',
+    ARRAY['sustainability', 'eco-friendly', 'zero waste', 'green living', 'environment'],
+    '{"min_subscribers": 10000, "content_type": ["tips", "guide"]}'::JSONB, 6),
+('Self Improvement', 'self-improvement', 'Personal development and growth', 'lifestyle', 'selfimprovement',
+    ARRAY['self improvement', 'personal growth', 'motivation', 'discipline', 'habits'],
+    '{"min_subscribers": 20000, "content_type": ["motivation", "advice"]}'::JSONB, 7)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Creative (12 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Photography', 'photography', 'Photography tutorials, gear reviews, and techniques', 'creative', 'photography',
+    ARRAY['photography', 'camera', 'photo editing', 'portrait', 'landscape', 'lightroom'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "review"]}'::JSONB, 7),
+('Music Production', 'music-production', 'Music creation, DAWs, and audio engineering', 'creative', 'music',
+    ARRAY['music production', 'DAW', 'Ableton', 'FL Studio', 'mixing', 'mastering'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "review"]}'::JSONB, 7),
+('Animation', 'animation', '2D/3D animation tutorials and showcases', 'creative', 'animation',
+    ARRAY['animation', 'Blender', 'Maya', '3D modeling', 'motion graphics', 'VFX'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "showcase"]}'::JSONB, 6),
+('Graphic Design', 'graphic-design', 'Design tutorials and software guides', 'creative', 'design',
+    ARRAY['graphic design', 'Photoshop', 'Illustrator', 'design tutorial', 'logo design'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "tips"]}'::JSONB, 7),
+('Filmmaking', 'filmmaking', 'Film production and cinematography', 'creative', 'film',
+    ARRAY['filmmaking', 'cinematography', 'video production', 'directing', 'screenwriting'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "behind scenes"]}'::JSONB, 6),
+('Drawing', 'drawing', 'Drawing and illustration tutorials', 'creative', 'drawing',
+    ARRAY['drawing', 'sketching', 'digital art', 'illustration', 'art tutorial'],
+    '{"min_subscribers": 15000, "content_type": ["tutorial", "speedpaint"]}'::JSONB, 6),
+('Writing', 'writing', 'Creative writing and storytelling', 'creative', 'writing',
+    ARRAY['writing', 'creative writing', 'storytelling', 'novel writing', 'worldbuilding'],
+    '{"min_subscribers": 10000, "content_type": ["tips", "advice"]}'::JSONB, 5),
+('DIY Electronics', 'diy-electronics', 'Electronics projects and circuits', 'creative', 'electronics',
+    ARRAY['electronics', 'Arduino', 'circuits', 'soldering', 'electronic projects'],
+    '{"min_subscribers": 8000, "content_type": ["project", "tutorial"]}'::JSONB, 5),
+('Woodworking', 'woodworking', 'Wood crafting and carpentry', 'creative', 'woodworking',
+    ARRAY['woodworking', 'carpentry', 'wood craft', 'furniture making', 'DIY wood'],
+    '{"min_subscribers": 15000, "content_type": ["project", "tutorial"]}'::JSONB, 5),
+('Pottery & Ceramics', 'pottery-ceramics', 'Pottery making and ceramics', 'creative', 'pottery',
+    ARRAY['pottery', 'ceramics', 'clay', 'wheel throwing', 'handbuilding'],
+    '{"min_subscribers": 10000, "content_type": ["tutorial", "demonstration"]}'::JSONB, 4),
+('Calligraphy', 'calligraphy', 'Hand lettering and calligraphy', 'creative', 'lettering',
+    ARRAY['calligraphy', 'hand lettering', 'typography', 'brush lettering'],
+    '{"min_subscribers": 8000, "content_type": ["tutorial", "demonstration"]}'::JSONB, 4),
+('Crafts', 'crafts', 'General crafting and handmade items', 'creative', 'crafts',
+    ARRAY['crafts', 'handmade', 'DIY', 'paper crafts', 'sewing'],
+    '{"min_subscribers": 12000, "content_type": ["tutorial", "project"]}'::JSONB, 5)
+ON CONFLICT (slug) DO NOTHING;
+
+-- News & Commentary (10 niches)
+INSERT INTO niche_domains (name, slug, description, category, subcategory, keywords, research_config, research_priority) VALUES
+('Political Commentary', 'political-commentary', 'Political analysis and commentary', 'news', 'politics',
+    ARRAY['politics', 'news', 'analysis', 'commentary', 'policy'],
+    '{"min_subscribers": 15000, "content_type": ["analysis", "commentary"]}'::JSONB, 6),
+('World News', 'world-news', 'International news and current events', 'news', 'world',
+    ARRAY['world news', 'international', 'current events', 'global news'],
+    '{"min_subscribers": 30000, "content_type": ["news", "analysis"]}'::JSONB, 7),
+('Documentary', 'documentary', 'Documentary filmmaking and investigative content', 'news', 'documentary',
+    ARRAY['documentary', 'investigation', 'exposé', 'journalism', 'true story'],
+    '{"min_subscribers": 20000, "content_type": ["documentary", "investigation"]}'::JSONB, 7),
+('Social Commentary', 'social-commentary', 'Social issues and cultural analysis', 'news', 'social',
+    ARRAY['social commentary', 'culture', 'society', 'social issues', 'cultural analysis'],
+    '{"min_subscribers": 15000, "content_type": ["commentary", "analysis"]}'::JSONB, 6),
+('Science News', 'science-news', 'Latest science discoveries and research', 'news', 'science',
+    ARRAY['science news', 'research', 'discovery', 'breakthrough', 'scientific'],
+    '{"min_subscribers": 25000, "content_type": ["news", "explanation"]}'::JSONB, 7),
+('Environmental News', 'environmental-news', 'Climate and environment news', 'news', 'environment',
+    ARRAY['environment', 'climate change', 'conservation', 'green news', 'eco news'],
+    '{"min_subscribers": 15000, "content_type": ["news", "analysis"]}'::JSONB, 6),
+('Legal Analysis', 'legal-analysis', 'Law and legal case analysis', 'news', 'legal',
+    ARRAY['law', 'legal analysis', 'court case', 'lawyer explains', 'legal news'],
+    '{"min_subscribers": 15000, "content_type": ["analysis", "explanation"]}'::JSONB, 6),
+('Military & Defense', 'military-defense', 'Military analysis and defense news', 'news', 'military',
+    ARRAY['military', 'defense', 'war analysis', 'geopolitics', 'strategy'],
+    '{"min_subscribers": 20000, "content_type": ["analysis", "news"]}'::JSONB, 5),
+('Conspiracy Theories', 'conspiracy-theories', 'Conspiracy discussions and debunking', 'news', 'conspiracy',
+    ARRAY['conspiracy', 'conspiracy theories', 'mystery', 'unsolved', 'debunking'],
+    '{"min_subscribers": 20000, "content_type": ["discussion", "analysis"]}'::JSONB, 4),
+('Celebrity Interviews', 'celebrity-interviews', 'In-depth celebrity conversations', 'news', 'interview',
+    ARRAY['celebrity interview', 'famous people', 'in depth', 'conversation', 'profile'],
+    '{"min_subscribers": 20000, "content_type": ["interview", "profile"]}'::JSONB, 6)
+ON CONFLICT (slug) DO NOTHING;
+
+-- ============================================================================
+-- SAMPLE YOUTUBE CREATORS DATA
+-- ============================================================================
+
+INSERT INTO youtube_creators (
+    youtube_channel_id,
+    channel_name,
+    channel_handle,
+    description,
+    thumbnail_url,
+    subscriber_count,
+    total_views,
+    video_count,
+    is_verified,
+    country,
+    language,
+    content_themes,
+    social_links
+) VALUES 
+-- Tech Creators
+(
+    'UCBJycsmduvYEL83R_U4JriQ',
+    'MKBHD',
+    '@mkbhd',
+    'Quality tech videos for the masses. Hosted by Marques Brownlee.',
+    'https://yt3.googleusercontent.com/ytc/example1.jpg',
+    18500000,
+    4500000000,
+    1850,
+    TRUE,
+    'US',
+    'en',
+    ARRAY['tech reviews', 'smartphones', 'gadgets'],
+    '{"twitter": "@MKBHD", "instagram": "@mkbhd"}'::JSONB
+),
+(
+    'UCXuqSBlHAE6Xw-yeJA0Tunw',
+    'Linus Tech Tips',
+    '@LinusTechTips',
+    'Tech tips, reviews, and PC building guides.',
+    'https://yt3.googleusercontent.com/ytc/example2.jpg',
+    15600000,
+    8200000000,
+    7200,
+    TRUE,
+    'CA',
+    'en',
+    ARRAY['PC hardware', 'tech reviews', 'tutorials'],
+    '{"twitter": "@LinusTech", "instagram": "@linustech"}'::JSONB
+),
+-- Education Creators
+(
+    'UCX6b17PVsYBQ0ip5gyeme-Q',
+    'CrashCourse',
+    '@thecrashcourse',
+    'Educational videos on various subjects.',
+    'https://yt3.googleusercontent.com/ytc/example3.jpg',
+    15500000,
+    1800000000,
+    1400,
+    TRUE,
+    'US',
+    'en',
+    ARRAY['education', 'science', 'history'],
+    '{"twitter": "@TheCrashCourse"}'::JSONB
+),
+-- Gaming Creators
+(
+    'UCOpNcN46UbXVtpKMrmU4Abg',
+    'PewDiePie',
+    '@PewDiePie',
+    'Gaming, commentary, and meme review.',
+    'https://yt3.googleusercontent.com/ytc/example4.jpg',
+    111000000,
+    29000000000,
+    4700,
+    TRUE,
+    'JP',
+    'en',
+    ARRAY['gaming', 'commentary', 'memes'],
+    '{"twitter": "@pewdiepie"}'::JSONB
+),
+-- Business Creators
+(
+    'UCMoGRome1SD436yfLC6Xe8g',
+    'Graham Stephan',
+    '@GrahamStephan',
+    'Personal finance, real estate, and investing.',
+    'https://yt3.googleusercontent.com/ytc/example5.jpg',
+    4800000,
+    850000000,
+    1250,
+    TRUE,
+    'US',
+    'en',
+    ARRAY['personal finance', 'real estate', 'investing'],
+    '{"twitter": "@GrahamStephan", "instagram": "@gpstephan"}'::JSONB
+)
+ON CONFLICT (youtube_channel_id) DO NOTHING;
+
+-- ============================================================================
+-- ADDITIONAL AGENT TEMPLATES
+-- ============================================================================
+
+INSERT INTO agent_templates (
+    name,
+    slug,
+    description,
+    version,
+    agent_type,
+    capabilities,
+    config_schema,
+    default_config,
+    resource_requirements,
+    timeout_seconds,
+    is_system,
+    created_by
+) VALUES 
+-- Script Writing Agent
+(
+    'Script Writing Agent',
+    'script-writer',
+    'Writes video scripts and outlines for content creators',
+    '1.0.0',
+    'writer',
+    ARRAY['script_writing', 'copywriting', 'storytelling', 'hook_writing'],
+    '{"type": "object", "properties": {"script_length": {"type": "string", "enum": ["short", "medium", "long"], "default": "medium"}, "tone": {"type": "string", "default": "conversational"}}}'::JSONB,
+    '{"script_length": "medium", "tone": "conversational"}'::JSONB,
+    '{"cpu": 1, "memory": "512Mi"}'::JSONB,
+    240,
+    TRUE,
+    '00000000-0000-0000-0000-000000000001'::UUID
+),
+-- Thumbnail Design Agent
+(
+    'Thumbnail Design Agent',
+    'thumbnail-designer',
+    'Analyzes and suggests high-CTR thumbnail designs',
+    '1.0.0',
+    'designer',
+    ARRAY['thumbnail_analysis', 'design_principles', 'CTR_optimization', 'color_theory'],
+    '{"type": "object", "properties": {"style": {"type": "string", "default": "modern"}, "include_face": {"type": "boolean", "default": true}}}'::JSONB,
+    '{"style": "modern", "include_face": true}'::JSONB,
+    '{"cpu": 1, "memory": "1Gi"}'::JSONB,
+    180,
+    TRUE,
+    '00000000-0000-0000-0000-000000000001'::UUID
+),
+-- Title Optimization Agent
+(
+    'Title Optimization Agent',
+    'title-optimizer',
+    'Optimizes video titles for search and click-through rate',
+    '1.0.0',
+    'optimizer',
+    ARRAY['SEO', 'title_optimization', 'keyword_research', 'CTR_optimization'],
+    '{"type": "object", "properties": {"max_length": {"type": "integer", "default": 60}, "include_power_words": {"type": "boolean", "default": true}}}'::JSONB,
+    '{"max_length": 60, "include_power_words": true}'::JSONB,
+    '{"cpu": 0.5, "memory": "256Mi"}'::JSONB,
+    60,
+    TRUE,
+    '00000000-0000-0000-0000-000000000001'::UUID
+),
+-- Engagement Analysis Agent
+(
+    'Engagement Analysis Agent',
+    'engagement-analyzer',
+    'Analyzes audience engagement patterns and retention',
+    '1.0.0',
+    'analyzer',
+    ARRAY['engagement_analysis', 'retention_optimization', 'audience_insights', 'comment_analysis'],
+    '{"type": "object", "properties": {"analysis_period": {"type": "string", "default": "30d"}, "include_sentiment": {"type": "boolean", "default": true}}}'::JSONB,
+    '{"analysis_period": "30d", "include_sentiment": true}'::JSONB,
+    '{"cpu": 1, "memory": "1Gi"}'::JSONB,
+    300,
+    TRUE,
+    '00000000-0000-0000-0000-000000000001'::UUID
+),
+-- Schedule Optimization Agent
+(
+    'Schedule Optimization Agent',
+    'schedule-optimizer',
+    'Recommends optimal upload times and frequency',
+    '1.0.0',
+    'optimizer',
+    ARRAY['schedule_optimization', 'audience_behavior', 'timezone_analysis', 'frequency_recommendation'],
+    '{"type": "object", "properties": {"target_timezone": {"type": "string", "default": "auto"}, "content_type": {"type": "string", "default": "mixed"}}}'::JSONB,
+    '{"target_timezone": "auto", "content_type": "mixed"}'::JSONB,
+    '{"cpu": 0.5, "memory": "256Mi"}'::JSONB,
+    120,
+    TRUE,
+    '00000000-0000-0000-0000-000000000001'::UUID
+)
+ON CONFLICT (slug) DO NOTHING;
+
+-- ============================================================================
+-- SAMPLE RESEARCH JOBS
+-- ============================================================================
+
+INSERT INTO research_jobs (
+    job_type,
+    status,
+    custom_query,
+    config,
+    priority,
+    total_tasks,
+    completed_tasks,
+    result_summary,
+    result_count,
+    created_by
+) VALUES 
+(
+    'niche_discovery',
+    'completed',
+    'Artificial Intelligence YouTubers',
+    '{"max_results": 100, "include_videos": true}'::JSONB,
+    8,
+    10,
+    10,
+    '{"creators_found": 45, "avg_subscribers": 125000}'::JSONB,
+    45,
+    '00000000-0000-0000-0000-000000000001'::UUID
+),
+(
+    'trend_research',
+    'processing',
+    'Gaming trends 2024',
+    '{"time_window": "90d", "platforms": ["youtube"]}'::JSONB,
+    7,
+    5,
+    2,
+    NULL,
+    0,
+    '00000000-0000-0000-0000-000000000001'::UUID
+)
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- END OF SEED.SQL
+-- ============================================================================

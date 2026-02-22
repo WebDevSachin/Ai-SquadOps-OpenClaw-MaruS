@@ -1,0 +1,139 @@
+---
+description: React/Next.js patterns, component structure, routing, API client usage
+globs: **/dashboard/src/**/*.tsx,**/dashboard/src/**/*.ts
+alwaysApply: false
+---
+
+# Frontend Patterns
+
+## Next.js App Router
+
+The dashboard uses Next.js 14+ with App Router. File-based routing in `app/` directory:
+
+```
+app/
+├── page.tsx           # Home (/)
+├── auth/
+│   ├── login/
+│   │   └── page.tsx  # /auth/login
+│   └── signup/
+│       └── page.tsx  # /auth/signup
+├── admin/
+│   └── users/
+│       └── page.tsx  # /admin/users
+```
+
+## Component Structure
+
+### Client vs Server Components
+
+- Default to Server Components
+- Add `"use client"` only when needed for interactivity
+- Keep client boundaries minimal for performance
+
+```typescript
+// Server Component (default)
+export default function Page() {
+  return <div>Server rendered</div>;
+}
+
+// Client Component (needs interactivity)
+"use client";
+export function ClientButton() {
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+### Component Organization
+
+```
+components/
+├── ui/                    # Reusable UI primitives
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   └── Card.tsx
+├── features/              # Feature-specific components
+│   ├── auth/
+│   │   └── LoginForm.tsx
+│   └── tasks/
+│       └── TaskList.tsx
+└── layouts/               # Layout components
+    └── DashboardLayout.tsx
+```
+
+## API Client
+
+Use the centralized API client in `lib/api.ts`:
+
+```typescript
+import { api } from "@/lib/api";
+
+// GET request
+const data = await api.get("/api/tasks");
+
+// POST request
+const result = await api.post("/api/tasks", { title: "New task" });
+
+// With auth header (automatic if token in localStorage)
+```
+
+## Authentication Flow
+
+### Login
+
+```typescript
+const response = await api.post("/api/auth/login", {
+  email,
+  password,
+  remember_me: false,
+});
+
+localStorage.setItem("token", response.accessToken);
+```
+
+### Protected Routes
+
+Use middleware or client-side checks:
+
+```typescript
+// Client-side redirect
+if (!localStorage.getItem("token")) {
+  router.push("/auth/login");
+}
+```
+
+## State Management
+
+- Use React Server Components for data fetching when possible
+- Use `useState` and `useEffect` for client-side state
+- Consider React Query or SWR for server state caching
+
+## Styling
+
+Tailwind CSS is used throughout. Follow these patterns:
+
+```typescript
+// Button variants via className
+<Button className={cn(
+  "px-4 py-2 rounded",
+  variant === "primary" && "bg-blue-600",
+  variant === "secondary" && "bg-gray-200"
+)}>
+```
+
+## Error Handling
+
+Display user-friendly error messages:
+
+```typescript
+try {
+  await api.post("/api/tasks", data);
+} catch (error: any) {
+  toast.error(error.response?.data?.error || "Failed to create task");
+}
+```
+
+## Environment Variables
+
+- `NEXT_PUBLIC_API_URL` - API base URL (default: http://localhost:4000)
+- Client-side env vars must start with `NEXT_PUBLIC_`

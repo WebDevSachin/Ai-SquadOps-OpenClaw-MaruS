@@ -1,0 +1,160 @@
+---
+description: Express.js patterns, route conventions, middleware usage, error handling
+globs: **/api/src/routes/**/*.ts,**/api/src/index.ts
+alwaysApply: false
+---
+
+# API Patterns
+
+## Route Structure
+
+Routes are organized by resource in `api/src/routes/`:
+
+```
+routes/
+├── auth.ts          # Authentication endpoints
+├── users.ts         # User management
+├── tasks.ts         # Task CRUD
+├── agents.ts        # Agent management
+├── workflows.ts     # Workflow definitions
+├── triggers.ts      # Trigger configurations
+└── ...
+```
+
+## Route File Template
+
+Each route file follows this pattern:
+
+```typescript
+import { Router, Request, Response } from "express";
+import { authenticate } from "../middleware/auth";
+
+export const router = Router();
+
+// GET / - List all
+router.get("/", authenticate, async (req: Request, res: Response) => {
+  // Implementation
+});
+
+// GET /:id - Get single
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // Implementation
+});
+
+// POST / - Create
+router.post("/", authenticate, async (req: Request, res: Response) => {
+  // Implementation
+});
+
+// PATCH /:id - Update
+router.patch("/:id", authenticate, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // Implementation
+});
+
+// DELETE /:id - Delete
+router.delete("/:id", authenticate, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // Implementation
+});
+```
+
+## Middleware Application
+
+Routes are registered in `api/src/index.ts` with appropriate middleware:
+
+```typescript
+// Public route
+app.use("/api/auth", authRouter);
+
+// Protected route
+app.use("/api/tasks", authenticate, tasksRouter);
+
+// Admin-only route
+app.use("/api/users", authenticate, requireRole("admin"), usersRouter);
+```
+
+## Response Patterns
+
+### Success Responses
+
+```typescript
+// Created
+res.status(201).json({ message: "Created", data: result });
+
+// Updated
+res.json({ message: "Updated", data: result });
+
+// Deleted
+res.json({ message: "Deleted" });
+
+// List
+res.json({ data: results, total: count });
+```
+
+### Error Responses
+
+```typescript
+// Validation error
+res.status(400).json({ error: "Invalid input", details: [...] });
+
+// Not found
+res.status(404).json({ error: "Resource not found" });
+
+// Authorization error
+res.status(403).json({ error: "Insufficient permissions" });
+
+// Server error
+res.status(500).json({ error: "Internal server error" });
+```
+
+## Request Validation
+
+Validate incoming data:
+
+```typescript
+// Basic validation
+if (!email || !password) {
+  return res.status(400).json({ error: "Email and password required" });
+}
+
+// Email format
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailRegex.test(email)) {
+  return res.status(400).json({ error: "Invalid email format" });
+}
+
+// Parse and validate IDs
+const id = parseInt(req.params.id);
+if (isNaN(id)) {
+  return res.status(400).json({ error: "Invalid ID" });
+}
+```
+
+## Async Error Handling
+
+Always use try-catch for async route handlers:
+
+```typescript
+router.post("/", authenticate, async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query("INSERT INTO ...", [...]);
+    res.status(201).json({ data: result.rows[0] });
+  } catch (err) {
+    console.error("Create error:", err);
+    res.status(500).json({ error: "Failed to create resource" });
+  }
+});
+```
+
+## Route Naming Conventions
+
+- Use plural nouns: `/users`, `/tasks`, `/agents`
+- Use kebab-case for multi-word paths: `/api-keys`
+- Nest related resources: `/users/:userId/tasks`
+- Use proper HTTP verbs: GET (read), POST (create), PATCH (update), DELETE (delete)
+
+## API Versioning
+
+Current endpoints are prefixed with `/api/`. Consider `/api/v1/` for future versions.

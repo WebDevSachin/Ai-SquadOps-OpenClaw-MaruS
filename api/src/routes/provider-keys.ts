@@ -6,8 +6,11 @@ export const providerKeysRouter = Router();
 
 // Supported providers
 const VALID_PROVIDERS = [
-  "openrouter",
+  "minimax",
+  "openai",
   "anthropic",
+  "google",
+  "openrouter",
   "aws-bedrock",
   "google-vertex",
   "azure",
@@ -35,6 +38,10 @@ providerKeysRouter.post("/", async (req: Request, res: Response) => {
 
     // Provider-specific validation
     switch (provider) {
+      case "minimax":
+      case "openai":
+      case "anthropic":
+      case "google":
       case "openrouter":
       case "anthropic":
         if (!keyData.apiKey || typeof keyData.apiKey !== "string") {
@@ -221,5 +228,86 @@ providerKeysRouter.patch("/:provider/toggle", async (req: Request, res: Response
   } catch (err) {
     console.error("Provider key toggle error:", err);
     res.status(500).json({ error: "Failed to toggle provider key" });
+  }
+});
+
+/**
+ * POST /api/provider-keys/validate
+ * Validate a provider key without saving
+ */
+providerKeysRouter.post("/validate", async (req: Request, res: Response) => {
+  try {
+    const { provider, keyData } = req.body;
+
+    // Validate provider
+    if (!provider || !VALID_PROVIDERS.includes(provider)) {
+      return res.status(400).json({
+        error: `Invalid provider. Must be one of: ${VALID_PROVIDERS.join(", ")}`,
+      });
+    }
+
+    // Validate keyData based on provider
+    if (!keyData || typeof keyData !== "object") {
+      return res.status(400).json({ error: "keyData must be an object" });
+    }
+
+    // Basic validation - check if API key exists and has minimum length
+    const apiKey = keyData.apiKey;
+    if (apiKey && typeof apiKey === "string") {
+      if (apiKey.length < 10) {
+        return res.status(400).json({ 
+          valid: false, 
+          error: "API key appears to be too short" 
+        });
+      }
+      
+      // Check for common API key patterns
+      const hasValidPrefix = /^sk-/.test(apiKey) || /^sk-ant-/.test(apiKey) || /^minimax-/.test(apiKey) || /^AIza/.test(apiKey);
+      
+      res.json({ 
+        valid: true, 
+        masked: `${apiKey.slice(0, 4)}${"*".repeat(Math.max(0, apiKey.length - 8))}${apiKey.slice(-4)}`,
+        message: "API key format looks valid"
+      });
+    } else {
+      return res.status(400).json({ 
+        valid: false, 
+        error: "API key is required" 
+      });
+    }
+  } catch (err) {
+    console.error("Provider key validation error:", err);
+    res.status(500).json({ error: "Failed to validate provider key" });
+  }
+});
+
+/**
+ * GET /api/provider-keys/:provider/masked
+ * Get masked version of a provider key (shows last 4 chars only)
+ */
+providerKeysRouter.get("/:provider/masked", async (req: Request, res: Response) => {
+  try {
+    const { provider } = req.params;
+
+    const result = await pool.query(
+      `SELECT provider
+       FROM provider_keys
+       WHERE user_id = $1 AND provider = $2`,
+      [req.user!.id, provider]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Provider key not found" });
+    }
+
+    // We just confirm it exists, but don't expose the actual key
+    res.json({
+      provider: result.rows[0].provider,
+      hasKey: true,
+      masked: "****-****-****-****"
+    });
+  } catch (err) {
+    console.error("Provider key masked fetch error:", err);
+    res.status(500).json({ error: "Failed to fetch masked provider key" });
   }
 });

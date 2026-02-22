@@ -1,0 +1,79 @@
+---
+description: Authentication patterns, JWT handling, password security, API keys, rate limiting
+globs: **/*auth*.ts,**/middleware/auth.ts
+alwaysApply: false
+---
+
+# Authentication Patterns
+
+## JWT Token Structure
+
+Access tokens include `type: "access"` and are valid for 24 hours. Refresh tokens include `type: "refresh"` and are valid for 7 days (or 30 days with rememberMe).
+
+```typescript
+// Access token payload
+{
+  userId: string;
+  email: string;
+  name: string;
+  role: string;
+  type: "access";
+}
+
+// Refresh token payload
+{
+  userId: string;
+  type: "refresh";
+  rememberMe: boolean;
+}
+```
+
+## Authentication Middleware
+
+Always use the `authenticate` middleware for routes requiring JWT or API key:
+
+```typescript
+import { authenticate } from "../middleware/auth";
+
+router.post("/endpoint", authenticate, handler);
+```
+
+## Role-Based Access Control
+
+Use `requireRole` for role-specific endpoints:
+
+```typescript
+import { requireRole } from "../middleware/auth";
+
+// Single role
+router.delete("/admin/users/:id", authenticate, requireRole("admin"), handler);
+
+// Multiple roles
+router.patch("/users/:id/role", authenticate, requireRole("admin", "moderator"), handler);
+```
+
+## Password Requirements
+
+- Minimum 8 characters, maximum 128
+- Must contain: lowercase, uppercase, number, special character
+- Use `validatePasswordStrength()` from middleware for validation
+- Always hash with bcrypt before storing
+
+## Account Lockout
+
+- 5 failed login attempts triggers 30-minute lockout
+- Lockout duration is configurable via `LOCKOUT_DURATION_MINUTES`
+- Use `isAccountLocked()` to check status in routes
+
+## API Keys
+
+- Generate with `sk_` prefix + 64 hex characters
+- Store hash (SHA-256) in database, never plaintext
+- Include `key_prefix` (first 8 chars) for identification
+- Authenticate via `X-API-Key` header
+
+## Rate Limiting
+
+- Auth endpoints: 5 requests per 15 minutes (`authRateLimiter`)
+- General API: 100 requests per 15 minutes (`apiRateLimiter`)
+- Always apply rate limiters to sensitive endpoints

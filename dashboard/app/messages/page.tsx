@@ -1,184 +1,170 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { MessageSquare, Bot } from "lucide-react";
+import { useState } from "react";
+import { MessageSquare, Send, Search, MoreVertical } from "lucide-react";
+import { Card, Button, Input, Badge } from "@/components/ui";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
-interface Message {
-  id: string;
-  agent_name?: string;
-  agentName?: string;
-  from?: string;
-  content: string;
-  type?: string;
-  message_type?: string;
-  timestamp?: string;
-  created_at?: string;
-}
-
-const typeBadges: Record<string, string> = {
-  chat: "bg-gray-800 text-gray-300 border-gray-700",
-  finding: "bg-emerald-900/40 text-emerald-300 border-emerald-800",
-  handoff: "bg-purple-900/40 text-purple-300 border-purple-800",
-  report: "bg-blue-900/40 text-blue-300 border-blue-800",
-  directive: "bg-amber-900/40 text-amber-300 border-amber-800",
-  question: "bg-cyan-900/40 text-cyan-300 border-cyan-800",
-};
-
-const agentAvatarColors = [
-  "bg-blue-600",
-  "bg-emerald-600",
-  "bg-purple-600",
-  "bg-amber-600",
-  "bg-pink-600",
-  "bg-cyan-600",
-  "bg-red-600",
-  "bg-indigo-600",
-  "bg-teal-600",
-  "bg-orange-600",
+const conversations = [
+  {
+    id: "1",
+    agent: "Engineering Lead",
+    avatar: "EL",
+    lastMessage: "I've completed the code review for the new feature",
+    time: "2m ago",
+    unread: 2,
+    status: "active",
+  },
+  {
+    id: "2",
+    agent: "Business Analyst",
+    avatar: "BA",
+    lastMessage: "The quarterly report is ready for review",
+    time: "1h ago",
+    unread: 0,
+    status: "active",
+  },
+  {
+    id: "3",
+    agent: "DevOps Agent",
+    avatar: "DO",
+    lastMessage: "Deployment completed successfully",
+    time: "3h ago",
+    unread: 0,
+    status: "paused",
+  },
 ];
 
-function getAvatarColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return agentAvatarColors[Math.abs(hash) % agentAvatarColors.length];
-}
-
-function getInitials(name: string) {
-  return name
-    .split(/[\s_-]+/)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 export default function MessagesPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const res = await fetch(`${API}/api/messages`);
-        if (res.ok) {
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : data.messages || [];
-          setMessages(list);
-        }
-      } catch (err) {
-        console.error("Failed to fetch messages:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMessages();
-  }, []);
-
-  useEffect(() => {
-    if (!loading && bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [loading, messages]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 fade-in">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Messages</h1>
-        <p className="text-gray-400 mt-1">Agent group chat and communications</p>
+        <h1 className="page-title">Messages</h1>
+        <p className="page-subtitle">Communicate with your AI agents</p>
       </div>
 
-      <div className="card !p-0 flex flex-col" style={{ height: "calc(100vh - 220px)" }}>
-        {/* Chat Header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-800">
-          <MessageSquare className="w-5 h-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Agent Group Chat</h2>
-          <span className="badge bg-gray-800 text-gray-400 border border-gray-700 ml-auto">
-            {messages.length} messages
-          </span>
-        </div>
-
-        {/* Messages Feed */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {loading ? (
-            [...Array(8)].map((_, i) => (
-              <div key={i} className="flex items-start gap-3 animate-pulse">
-                <div className="w-9 h-9 bg-gray-800 rounded-full shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="h-3.5 w-24 bg-gray-800 rounded" />
-                    <div className="h-3 w-16 bg-gray-800 rounded" />
-                  </div>
-                  <div className="h-4 w-3/4 bg-gray-800 rounded" />
-                  <div className="h-4 w-1/2 bg-gray-800 rounded" />
-                </div>
-              </div>
-            ))
-          ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <MessageSquare className="w-12 h-12 mb-3 opacity-30" />
-              <p>No messages yet</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+        {/* Conversations List */}
+        <Card className="lg:col-span-1 !p-0 flex flex-col">
+          <div className="p-4 border-b border-gray-800">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search conversations..."
+                className="input-with-icon text-sm"
+              />
             </div>
-          ) : (
-            messages.map((msg, i) => {
-              const name = msg.agent_name || msg.agentName || msg.from || "Unknown";
-              const msgType = msg.type || msg.message_type || "chat";
-              const time = msg.timestamp || msg.created_at;
-
-              return (
-                <div
-                  key={msg.id || i}
-                  className="flex items-start gap-3 group hover:bg-gray-800/20 -mx-3 px-3 py-2 rounded-lg transition-colors"
-                >
-                  {/* Avatar */}
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-xs font-bold text-white ${getAvatarColor(
-                      name
-                    )}`}
-                  >
-                    {getInitials(name)}
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {conversations.map((conv) => (
+              <button
+                key={conv.id}
+                onClick={() => setSelectedChat(conv.id)}
+                className={`w-full p-4 flex items-start gap-3 text-left transition-colors border-b border-gray-800/50 hover:bg-gray-800/30 ${
+                  selectedChat === conv.id ? "bg-gray-800/50" : ""
+                }`}
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-medium text-white shrink-0">
+                  {conv.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="font-medium text-white truncate">
+                      {conv.agent}
+                    </span>
+                    <span className="text-xs text-gray-500">{conv.time}</span>
                   </div>
+                  <p className="text-sm text-gray-400 truncate">
+                    {conv.lastMessage}
+                  </p>
+                </div>
+                {conv.unread > 0 && (
+                  <Badge variant="primary" size="sm" className="shrink-0">
+                    {conv.unread}
+                  </Badge>
+                )}
+              </button>
+            ))}
+          </div>
+        </Card>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-white">
-                        {name}
-                      </span>
-                      {msgType !== "chat" && (
-                        <span
-                          className={`badge border text-[10px] ${
-                            typeBadges[msgType] || typeBadges.chat
-                          }`}
-                        >
-                          {msgType}
-                        </span>
-                      )}
-                      {time && (
-                        <span className="text-xs text-gray-600 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                          {new Date(time).toLocaleString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">
-                      {msg.content}
+        {/* Chat Area */}
+        <Card className="lg:col-span-2 !p-0 flex flex-col">
+          {selectedChat ? (
+            <>
+              {/* Chat Header */}
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-medium text-white">
+                    EL
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-white">Engineering Lead</h3>
+                    <p className="text-xs text-green-400 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                      Online
                     </p>
                   </div>
                 </div>
-              );
-            })
+                <button className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white shrink-0">
+                    EL
+                  </div>
+                  <div className="bg-gray-800 rounded-2xl rounded-tl-none px-4 py-2.5 max-w-[80%]">
+                    <p className="text-sm text-gray-200">
+                      I&apos;ve completed the code review for the new feature. The
+                      implementation looks good overall, but I have a few
+                      suggestions.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3 justify-end">
+                  <div className="bg-indigo-600 rounded-2xl rounded-tr-none px-4 py-2.5 max-w-[80%]">
+                    <p className="text-sm text-white">
+                      Thanks for the review! What are your main concerns?
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input */}
+              <div className="p-4 border-t border-gray-800">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Type a message..."
+                    className="input flex-1"
+                  />
+                  <Button leftIcon={<Send className="w-4 h-4" />}>
+                    Send
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
+                <MessageSquare className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-300 mb-1">
+                Select a conversation
+              </h3>
+              <p className="text-sm text-gray-500">
+                Choose an agent from the list to start messaging
+              </p>
+            </div>
           )}
-          <div ref={bottomRef} />
-        </div>
+        </Card>
       </div>
     </div>
   );

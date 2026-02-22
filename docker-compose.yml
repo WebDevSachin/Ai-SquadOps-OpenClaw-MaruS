@@ -1,5 +1,14 @@
-# SquadOps Docker Compose — Ops Hub Services
+# SquadOps Docker Compose — Production-Ready Ops Hub Services
 # This compose runs: Postgres, Redis, API, Dashboard, OpenClaw Gateway
+#
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose up -d --build      # Rebuild and start
+#   docker compose logs -f            # View logs
+#   docker compose down               # Stop services
+#   docker compose down -v            # Stop and remove volumes
+
+version: "3.8"
 
 services:
   # -------------------------------------------------------
@@ -16,7 +25,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./api/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./api/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./api/db/init-swarm.sql:/docker-entrypoint-initdb.d/02-init-swarm.sql:ro
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -25,6 +35,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    networks:
+      - squadops-network
+    labels:
+      - "squadops.service=database"
+      - "squadops.component=postgres"
 
   # -------------------------------------------------------
   # Redis — session cache, pub/sub for agent events
@@ -36,6 +52,7 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -44,6 +61,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 5s
+    networks:
+      - squadops-network
+    labels:
+      - "squadops.service=cache"
+      - "squadops.component=redis"
 
   # -------------------------------------------------------
   # API — Express backend for Ops Hub dashboard
@@ -56,16 +79,32 @@ services:
     ports:
       - "4000:4000"
     environment:
+      # Database
       - DATABASE_URL=postgresql://squadops:${POSTGRES_PASSWORD:-squadops_dev}@postgres:5432/squadops
+      # Cache
       - REDIS_URL=redis://redis:6379
-      - NODE_ENV=development
-      - JWT_SECRET=${JWT_SECRET:-squadops_dev_secret}
-      - ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
+      # Node environment
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=4000
+      # Security
+      - JWT_SECRET=${JWT_SECRET:-squadops_prod_secret_change_me}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-squadops_refresh_secret_change_me}
+      - ENCRYPTION_SECRET=${ENCRYPTION_SECRET:-encryption_secret_32_chars_minimum}
+      # CORS - production URLs
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+      # LLM Provider Keys (System-wide fallback)
       - SYSTEM_OPENROUTER_KEY=${SYSTEM_OPENROUTER_KEY}
       - SYSTEM_ANTHROPIC_KEY=${SYSTEM_ANTHROPIC_KEY}
-      # OpenClaw gateway runs in this compose network
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # OpenClaw gateway
       - OPENCLAW_GATEWAY_URL=http://openclaw-gateway:18789
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - OPENCLAW_PORT=18789
+      # Telegram (optional)
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      # Frontend URL for emails/links
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
     security_opt:
       - no-new-privileges:true
     depends_on:
@@ -74,6 +113,17 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - squadops-network
+    labels:
+      - "squadops.service=api"
+      - "squadops.component=backend"
 
   # -------------------------------------------------------
   # Dashboard — Next.js Ops Hub frontend
@@ -86,17 +136,35 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000
-      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+    security_opt:
+      - no-new-privileges:true
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - squadops-network
+    labels:
+      - "squadops.service=frontend"
+      - "squadops.component=dashboard"
 
   # -------------------------------------------------------
   # OpenClaw Gateway — AI agent gateway service
   # -------------------------------------------------------
+  # Official image: https://hub.docker.com/r/fourplayers/openclaw
+  # Starts with the rest of the stack. Backend connects via OPENCLAW_GATEWAY_URL.
+  # -------------------------------------------------------
   openclaw-gateway:
-    image: openclaw:local
+    image: fourplayers/openclaw:latest
     container_name: squadops-openclaw-gateway
     init: true
     ports:
@@ -104,14 +172,46 @@ services:
       - "18790:18790"
     volumes:
       - ./openclaw-config:/home/node/.openclaw
+      - openclaw-data:/home/node/data
     environment:
       - HOME=/home/node
       - TERM=xterm-256color
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-    command: ["node", "dist/index.js", "gateway", "--port", "18789", "--verbose", "--allow-unconfigured"]
+      - OPENCLAW_TLS_ENABLED=false
+      - OPENCLAW_SKIP_ONBOARD=true
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:18789/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - squadops-network
+    labels:
+      - "squadops.service=gateway"
+      - "squadops.component=openclaw"
 
+# -------------------------------------------------------
+# Volumes (with proper permissions)
+# -------------------------------------------------------
 volumes:
   postgres-data:
+    driver: local
   redis-data:
+    driver: local
+  openclaw-data:
+    driver: local
+
+# -------------------------------------------------------
+# Networks
+# -------------------------------------------------------
+networks:
+  squadops-network:
+    driver: bridge
+    name: squadops-network

@@ -1,0 +1,128 @@
+---
+description: Database schema patterns, PostgreSQL conventions, query patterns, migration guidelines
+globs: **/api/src/**/*.ts
+alwaysApply: false
+---
+
+# Database Patterns
+
+## Connection Pool
+
+Use the shared pool from the main index file:
+
+```typescript
+import { pool } from "../index";
+
+// Query example
+const result = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+```
+
+## Query Conventions
+
+### Parameterized Queries
+
+Always use parameterized queries to prevent SQL injection:
+
+```typescript
+// Good
+await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+// Bad - never use string interpolation
+await pool.query(`SELECT * FROM users WHERE email = '${email}'`);
+```
+
+### Return Statements
+
+Use `RETURNING` for INSERT/UPDATE operations:
+
+```typescript
+const result = await pool.query(
+  "INSERT INTO users (email, name) VALUES ($1, $2) RETURNING id, email, name",
+  [email, name]
+);
+const user = result.rows[0];
+```
+
+## Schema Patterns
+
+### Timestamps
+
+Always include `created_at` and `updated_at`:
+
+```sql
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+```
+
+### Soft Deletes
+
+Use `deleted_at` for soft delete:
+
+```sql
+deleted_at TIMESTAMP DEFAULT NULL
+```
+
+Query with: `WHERE deleted_at IS NULL`
+
+### UUID Primary Keys
+
+Generate with `gen_random_uuid()` or application-side:
+
+```sql
+id UUID PRIMARY KEY DEFAULT gen_random_uuid()
+```
+
+## Common Patterns
+
+### Pagination
+
+```typescript
+const limit = Math.min(parsedInt(req.query.limit) || 20, 100);
+const offset = (parsedInt(req.query.page) - 1) * limit || 0;
+
+await pool.query(
+  "SELECT * FROM items ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+  [limit, offset]
+);
+```
+
+### Upsert Operations
+
+```typescript
+await pool.query(
+  `INSERT INTO items (id, name, value)
+   VALUES ($1, $2, $3)
+   ON CONFLICT (id) DO UPDATE SET
+   name = EXCLUDED.name, value = EXCLUDED.value, updated_at = NOW()`,
+  [id, name, value]
+);
+```
+
+### Transaction Support
+
+```typescript
+const client = await pool.connect();
+try {
+  await client.query("BEGIN");
+  // operations
+  await client.query("COMMIT");
+} catch (e) {
+  await client.query("ROLLBACK");
+  throw e;
+} finally {
+  client.release();
+}
+```
+
+## Redis Usage
+
+Redis is used for:
+- Token blacklisting and session management
+- Caching frequently accessed data
+- Rate limiting counters
+- Reset tokens (password reset)
+
+Key patterns:
+- `token:blacklist:{token_hash}` - Blacklisted tokens
+- `refresh:{user_id}:{token_id}` - Active refresh tokens
+- `reset:{token_hash}` - Password reset tokens

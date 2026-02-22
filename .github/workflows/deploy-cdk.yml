@@ -1,0 +1,62 @@
+name: Deploy to AWS (CDK)
+
+on:
+  push:
+    branches: [cdk-deployment]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install CDK dependencies
+        working-directory: infra/cdk
+        run: npm ci
+
+      - name: CDK Bootstrap
+        working-directory: infra/cdk
+        run: npx cdk bootstrap
+
+      - name: CDK Deploy
+        working-directory: infra/cdk
+        run: |
+          ENV=${{ github.event.inputs.environment || 'dev' }}
+          npx cdk deploy --all --context env=$ENV --require-approval never
+
+      - name: Get deployment outputs
+        working-directory: infra/cdk
+        run: |
+          echo "Deployment complete!"
+          npx cdk output --context env=${{ github.event.inputs.environment || 'dev' }}

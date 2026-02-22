@@ -84,6 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Check if impersonating
+      const impersonationData = localStorage.getItem("impersonation_data");
+      if (impersonationData) {
+        const parsed = JSON.parse(impersonationData);
+        if (parsed.isImpersonating && parsed.impersonatedUser) {
+          // Use impersonated user data instead of calling API
+          setUser(parsed.impersonatedUser);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const response = await api.get("/auth/me");
       setUser((response.data as { user: User }).user);
     } catch (error) {

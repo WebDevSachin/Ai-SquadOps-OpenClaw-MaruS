@@ -55,76 +55,58 @@ const adminCards = [
   },
 ];
 
-const systemStats = [
-  { label: "CPU Usage", value: "45%", icon: Server, color: "text-blue-400", bgColor: "bg-blue-900/20" },
-  { label: "Memory", value: "62%", icon: Database, color: "text-purple-400", bgColor: "bg-purple-900/20" },
-  { label: "Active Sessions", value: "89", icon: Activity, color: "text-green-400", bgColor: "bg-green-900/20" },
-  { label: "Security Alerts", value: "2", icon: Shield, color: "text-amber-400", bgColor: "bg-amber-900/20" },
-];
+interface SystemHealth {
+  cpu_usage: number;
+  memory_usage: number;
+  active_sessions: number;
+  security_alerts: number;
+}
 
-const recentAlerts = [
-  {
-    id: 1,
-    type: "warning",
-    message: "High CPU usage detected on agent-swarm-42",
-    time: "5 minutes ago",
-  },
-  {
-    id: 2,
-    type: "info",
-    message: "User 'john.doe@example.com' role changed to Admin",
-    time: "1 hour ago",
-  },
-  {
-    id: 3,
-    type: "error",
-    message: "Agent swarm task failed: YouTube API rate limit exceeded",
-    time: "2 hours ago",
-  },
-  {
-    id: 4,
-    type: "success",
-    message: "Daily backup completed successfully",
-    time: "4 hours ago",
-  },
-];
+interface Alert {
+  id: string;
+  type: 'error' | 'warning' | 'info' | 'success';
+  message: string;
+  time: string;
+}
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get("/users/stats");
-        setStats(response.data);
+        // Fetch user stats
+        const statsRes = await api.get("/users/stats");
+        setStats(statsRes.data);
+
+        // Fetch system health
+        const healthRes = await api.get("/system/health");
+        setSystemHealth(healthRes.data);
+
+        // Fetch recent alerts from audit log
+        const alertsRes = await api.get("/audit?limit=5");
+        const formattedAlerts = alertsRes.data.logs?.map((log: any) => ({
+          id: log.id,
+          type: log.status === 'error' ? 'error' : 
+                log.status === 'warning' ? 'warning' : 
+                log.action?.includes('CREATE') ? 'success' : 'info',
+          message: `${log.action} - ${log.entity_type}`,
+          time: new Date(log.created_at).toLocaleString()
+        })) || [];
+        setAlerts(formattedAlerts);
       } catch (err: any) {
-        console.error("Failed to fetch user stats:", err);
-        // Use mock data if API fails
-        setStats({
-          total_users: 1247,
-          active_users: 1089,
-          inactive_users: 158,
-          by_role: { admin: 12, member: 856, viewer: 379 },
-          new_this_week: 34,
-          new_this_month: 156,
-          recent_registrations: [
-            { date: "2026-02-09", count: 5 },
-            { date: "2026-02-10", count: 8 },
-            { date: "2026-02-11", count: 3 },
-            { date: "2026-02-12", count: 12 },
-            { date: "2026-02-13", count: 7 },
-            { date: "2026-02-14", count: 9 },
-            { date: "2026-02-15", count: 4 },
-          ],
-        });
+        console.error("Failed to fetch admin data:", err);
+        setError("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, []);
 
   // Calculate chart height based on max value
@@ -285,7 +267,12 @@ export default function AdminDashboardPage() {
           </div>
         </CardHeader>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {systemStats.map((stat) => (
+          {[
+            { label: "CPU Usage", value: `${systemHealth?.cpu_usage || 0}%`, icon: Server, color: "text-blue-400", bgColor: "bg-blue-900/20" },
+            { label: "Memory", value: `${systemHealth?.memory_usage || 0}%`, icon: Database, color: "text-purple-400", bgColor: "bg-purple-900/20" },
+            { label: "Active Sessions", value: systemHealth?.active_sessions?.toString() || "0", icon: Activity, color: "text-green-400", bgColor: "bg-green-900/20" },
+            { label: "Security Alerts", value: systemHealth?.security_alerts?.toString() || "0", icon: Shield, color: "text-amber-400", bgColor: "bg-amber-900/20" },
+          ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className={`inline-flex p-3 rounded-xl ${stat.bgColor} mb-3`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
@@ -299,22 +286,22 @@ export default function AdminDashboardPage() {
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Alerts */}
+          {/* Recent Alerts */}
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-gray-400" />
-              <CardTitle>Recent Alerts</CardTitle>
+              <CardTitle>Recent Activity</CardTitle>
             </div>
             <Link
-              href="/admin/alerts"
+              href="/audit"
               className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
             >
               View all
             </Link>
           </CardHeader>
           <div className="space-y-2">
-            {recentAlerts.map((alert, index) => (
+            {alerts.length > 0 ? alerts.map((alert, index) => (
               <div
                 key={alert.id}
                 className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-800/50 transition-colors cursor-pointer"
@@ -336,7 +323,9 @@ export default function AdminDashboardPage() {
                   <p className="text-xs text-gray-500 mt-1">{alert.time}</p>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 text-center py-4">No recent activity</p>
+            )}
           </div>
         </Card>
 

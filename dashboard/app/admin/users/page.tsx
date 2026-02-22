@@ -5,6 +5,7 @@ import { Users, Plus, X, Loader2, RefreshCw, Search, Filter, ArrowUpDown } from 
 import UserTable, { User } from "@/components/admin/UserTable";
 import { Card, Button, Badge, Input, Select, SkeletonCard } from "@/components/ui";
 import { Breadcrumb, useBreadcrumbs } from "@/components/Breadcrumb";
+import { useImpersonation } from "@/hooks/useImpersonation";
 import api from "@/lib/api";
 
 interface UserData {
@@ -53,6 +54,7 @@ export default function UsersPage() {
   const [saving, setSaving] = useState(false);
   const [newUserPassword, setNewUserPassword] = useState("");
   const breadcrumbs = useBreadcrumbs();
+  const { startImpersonation } = useImpersonation();
 
   const fetchUsers = useCallback(async (page = 1) => {
     setLoading(true);
@@ -218,6 +220,17 @@ export default function UsersPage() {
       alert(err.response?.data?.error || `Failed to ${isCreateMode ? "create" : "update"} user`);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleImpersonate = (user: User) => {
+    if (confirm(`Impersonate as ${user.name} (${user.email})?\n\nYou will see the app exactly as this user sees it.`)) {
+      startImpersonation({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
     }
   };
 
@@ -452,6 +465,7 @@ export default function UsersPage() {
           onDeactivate={handleDeactivate}
           onActivate={handleActivate}
           onExport={handleExport}
+          onImpersonate={handleImpersonate}
         />
       )}
 

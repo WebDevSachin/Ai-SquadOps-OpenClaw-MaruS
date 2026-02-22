@@ -24,7 +24,9 @@ import {
   Shield,
 } from "lucide-react";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { ImpersonationProvider, useImpersonation } from "@/hooks/useImpersonation";
 import { LogoutButton } from "@/components/LogoutButton";
+import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import { ToastProvider, KeyboardHints } from "@/components/ui";
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from "@/hooks/useKeyboardShortcuts";
 
@@ -56,6 +58,9 @@ function getNavItems(showOnboarding: boolean) {
 
 // Routes that don't show the sidebar (truly public routes for unauthenticated users)
 const PUBLIC_ROUTES = ["/landing", "/auth/login", "/auth/signup", "/auth/forgot-password"];
+
+// Routes that hide the main sidebar (admin has its own navigation)
+const HIDE_SIDEBAR_ROUTES = ["/admin"];
 
 function SidebarNav({
   collapsed,
@@ -288,8 +293,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   // Check if current route is public (no sidebar)
   const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route));
   
-  // Show sidebar only for authenticated users on non-public routes
-  const showSidebar = isAuthenticated && !isPublicRoute;
+  // Check if current route should hide main sidebar (admin has its own nav)
+  const isAdminRoute = HIDE_SIDEBAR_ROUTES.some(route => pathname.startsWith(route));
+  
+  // Show sidebar only for authenticated users on non-public, non-admin routes
+  const showSidebar = isAuthenticated && !isPublicRoute && !isAdminRoute;
   
   // Determine if onboarding nav item should be shown
   // Show if onboarding is not completed or still loading
@@ -368,6 +376,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   );
 }
 
+function LayoutWithImpersonation({ children }: { children: React.ReactNode }) {
+  const { isImpersonating } = useImpersonation();
+
+  return (
+    <>
+      {isImpersonating && <ImpersonationBanner />}
+      <div className={isImpersonating ? "pt-10" : ""}>
+        <LayoutContent>{children}</LayoutContent>
+      </div>
+      <KeyboardHints />
+    </>
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -381,10 +403,11 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-950">
         <AuthProvider>
-          <ToastProvider>
-            <LayoutContent>{children}</LayoutContent>
-            <KeyboardHints />
-          </ToastProvider>
+          <ImpersonationProvider>
+            <ToastProvider>
+              <LayoutWithImpersonation>{children}</LayoutWithImpersonation>
+            </ToastProvider>
+          </ImpersonationProvider>
         </AuthProvider>
       </body>
     </html>

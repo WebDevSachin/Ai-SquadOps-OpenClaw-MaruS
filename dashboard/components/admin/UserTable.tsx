@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Download,
   Eye,
+  UserCircle,
 } from "lucide-react";
 
 export interface User {
@@ -31,6 +32,7 @@ interface UserTableProps {
   onDeactivate: (userId: string) => void;
   onActivate: (userId: string) => void;
   onExport: () => void;
+  onImpersonate?: (user: User) => void;
 }
 
 const roleColors: Record<string, string> = {
@@ -52,6 +54,7 @@ export default function UserTable({
   onDeactivate,
   onActivate,
   onExport,
+  onImpersonate,
 }: UserTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -232,6 +235,18 @@ export default function UserTable({
                               <Edit2 className="w-4 h-4" />
                               Edit User
                             </button>
+                            {onImpersonate && (
+                              <button
+                                onClick={() => {
+                                  onImpersonate(user);
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-indigo-400 hover:bg-gray-800 transition-colors"
+                              >
+                                <UserCircle className="w-4 h-4" />
+                                Impersonate User
+                              </button>
+                            )}
                             {user.status === "active" ? (
                               <button
                                 onClick={() => {

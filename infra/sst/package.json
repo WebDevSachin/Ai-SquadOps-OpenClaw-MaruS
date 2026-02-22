@@ -1,0 +1,22 @@
+{
+  "name": "squadops-sst",
+  "version": "1.0.0",
+  "description": "SquadOps AWS SST v3 Infrastructure",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "sst deploy",
+    "dev": "sst dev",
+    "remove": "sst remove",
+    "console": "sst console",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "sst": "^3.0.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "sst": "^3.0.0"
+  }
+}

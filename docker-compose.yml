@@ -172,7 +172,8 @@ services:
       - "18789:18789"
       - "18790:18790"
     volumes:
-      - ./openclaw-config:/home/node/.openclaw
+      - ./openclaw-config:/home/node/.openclaw:ro
+      - ./openclaw-config/settings.json:/home/node/.openclaw/settings.json:ro
       - openclaw-data:/home/node/data
     environment:
       - HOME=/home/node

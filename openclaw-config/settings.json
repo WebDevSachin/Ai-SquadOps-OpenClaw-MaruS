@@ -1,0 +1,14 @@
+{
+  "gatewayToken": "openclaw_dev_token_12345",
+  "autoApproveDevices": true,
+  "web": {
+    "enabled": true,
+    "cors": {
+      "origins": ["http://localhost:18789", "http://localhost:3000", "http://localhost:4000"]
+    }
+  },
+  "control": {
+    "enabled": true,
+    "token": "openclaw_dev_token_12345"
+  }
+}

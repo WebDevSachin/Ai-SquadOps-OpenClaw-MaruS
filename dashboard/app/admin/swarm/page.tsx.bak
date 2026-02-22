@@ -599,7 +599,7 @@ export default function SwarmControlPage() {
             </div>
             <div className="flex justify-end">
               <a
-                href="http://localhost:18789/chat?session=main&token=openclaw_dev_token_12345"
+                href="http://localhost:18789/chat?session=main&token=e4ba6a594fed8c6e70897bcf5b03ecff33e36eee60d8c55497c3d1c1329b3bfd"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
@@ -617,7 +617,7 @@ export default function SwarmControlPage() {
             <p className="text-gray-400 mb-2">OpenClaw Gateway is not reachable</p>
             <p className="text-sm text-gray-500 mb-4">Make sure OpenClaw is running on port 18789</p>
             <a
-              href="http://localhost:18789/chat?session=main&token=openclaw_dev_token_12345"
+              href="http://localhost:18789/chat?session=main&token=e4ba6a594fed8c6e70897bcf5b03ecff33e36eee60d8c55497c3d1c1329b3bfd"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"

@@ -1,0 +1,30 @@
+# Docker Compose Override for Local Development
+# This file adds auto-configuration for OpenClaw
+
+services:
+  openclaw-gateway:
+    environment:
+      # Ensure token is set for easy local access
+      - OPENCLAW_GATEWAY_TOKEN=openclaw_dev_token_12345
+      - OPENCLAW_SKIP_ONBOARD=true
+      - OPENCLAW_TLS_ENABLED=false
+      # Auto-approve devices
+      - OPENCLAW_AUTO_APPROVE=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openclaw.rule=Host(`localhost`)"
+      - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
+
+  # Auto-config service that runs once on startup
+  openclaw-config:
+    image: curlimages/curl:latest
+    container_name: squadops-openclaw-config
+    depends_on:
+      openclaw-gateway:
+        condition: service_healthy
+    volumes:
+      - ./scripts/openclaw-init.sh:/openclaw-init.sh:ro
+    command: ["/bin/sh", "/openclaw-init.sh"]
+    networks:
+      - squadops-network
+    restart: "no"
